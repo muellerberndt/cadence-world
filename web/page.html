@@ -141,6 +141,7 @@
           <label><input type="checkbox" id="r-kinds"> two kinds of ground</label>
           <label><input type="checkbox" id="r-bite"> biting</label>
           <label><input type="checkbox" id="r-carry"> carrying soil</label>
+          <label><input type="checkbox" id="r-digest"> slow digestion</label>
         </div>
         <div class="row" style="margin-top:8px"><button class="act" id="reseed">New world with these rules</button></div>
       </div>
@@ -158,7 +159,7 @@
 <script>
 'use strict';
 const { CFG, POP, N, DIRS, OUTCOMES, GROUP_NAMES, G, bit, Substrate, Population } = CW;
-const DEFAULT_RULES = { ripen: true, rock: true, night: false, kinds: false, bite: true, carry: false };
+const DEFAULT_RULES = { ripen: true, rock: true, night: false, kinds: false, bite: true, carry: false, digest: false };
 const ABBREV = { food: 'food', occ: 'others', energy: 'energy', out: 'last', light: 'light', green: 'unripe', rock: 'rock', kind: 'kind', lastkind: 'digested', kin: 'kin', dark: 'dark', carried: 'carried', heard: 'heard', inner: 'the other cortices' };
 
 // ---------- the 3D world ----------

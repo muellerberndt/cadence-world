@@ -13,8 +13,8 @@ Mulberry.prototype.random = function () {
 };
 
 // ---------- the rules: each a flag, each one physical rule ----------
-const RULES = { ripen: false, rock: false, night: false, kinds: false, bite: false, carry: false };
-const CFG = { w: 96, h: 96, soil: 6, grow: 0.08, decay: 0.01, diffuse: 0.05, day: 900, season: 9000, contrastMin: 0.25, foodCap: 8, ripenTicks: 30, rockFraction: 0.12, nightBelow: 0.35, warmup: 400 };
+const RULES = { ripen: false, rock: false, night: false, kinds: false, bite: false, carry: false, digest: false };
+const CFG = { w: 96, h: 96, soil: 6, grow: 0.08, decay: 0.01, diffuse: 0.05, day: 900, season: 9000, contrastMin: 0.25, foodCap: 8, ripenTicks: 30, rockFraction: 0.12, nightBelow: 0.35, warmup: 400, digestTicks: 6 };
 const POP = { initial: 300, birth: 12, max: 1500, base: 0.08, move: 0.05, emit: 0.02, bite: 0.10, read: 0.0004, imagine: 0.1, cell: 0.01 / 256, write: 0.002 };
 const N = CFG.w * CFG.h;
 const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -259,10 +259,10 @@ class Population {
   }
   make(x, y, energy, g, lineage, parent) {
     const id = this.nextId++;
-    return { id, x, y, energy, g, brain: new Brain(g, this.rules), lineage: lineage === null ? id : lineage, parent, born: this.sub.tick, age: 0, last: 5, outcome: 0, heard: 0, symbol: 0, symbolPrev: 0, lastKind: 2, carried: 0, reward: 0, mem: new Map(), slot: -1 };
+    return { id, x, y, energy, g, brain: new Brain(g, this.rules), lineage: lineage === null ? id : lineage, parent, born: this.sub.tick, age: 0, last: 5, outcome: 0, heard: 0, symbol: 0, symbolPrev: 0, lastKind: 2, carried: 0, gut: [], reward: 0, mem: new Map(), slot: -1 };
   }
   spawn(x, y, energy, g, lineage, parent) { const c = this.make(x, y, energy, g, lineage, parent); this.creatures.push(c); return c; }
-  get held() { let m = 0; for (const c of this.creatures) m += c.energy + c.carried; return m; }
+  get held() { let m = 0; for (const c of this.creatures) m += c.energy + c.carried + c.gut.length; return m; }
   get mass() { return this.sub.mass + this.held; }
   record(c, i, food) {
     const old = c.mem.get(i);
@@ -293,6 +293,7 @@ class Population {
       c.heard = b.hears ? this.hear(c) : 0;
       b.read(this, c); b.readOut(b.x, b.q); b.learn(c.reward);
       const a = b.decide(this.rng), name = b.actions[a]; c.last = a; const before = c.energy; let moved = false, extra = 0;
+      while (c.gut.length && c.gut[0] <= s.tick) { c.gut.shift(); c.energy++; } // digestion: a unit eaten digestTicks ago becomes energy now
       const here = c.y * CFG.w + c.x;
       if (a < 4) {
         const [dx, dy] = DIRS[a]; const nx = (c.x + dx + CFG.w) % CFG.w, ny = (c.y + dy + CFG.h) % CFG.h, ni = ny * CFG.w + nx;
@@ -300,7 +301,7 @@ class Population {
       } else if (name === 'eat') {
         if (s.food[here] > 0) {
           s.food[here]--;
-          if (R.kinds && c.lastKind === s.kind[here] && this.rng.random() < 0.5) { s.food[here]++; c.outcome = 6; } /* the same kind again digests half the time; the unit stays otherwise */ else { c.energy++; c.lastKind = s.kind[here]; c.outcome = 3; }
+          if (R.kinds && c.lastKind === s.kind[here] && this.rng.random() < 0.5) { s.food[here]++; c.outcome = 6; } /* the same kind again digests half the time; the unit stays otherwise */ else { if (R.digest) c.gut.push(s.tick + CFG.digestTicks); else c.energy++; c.lastKind = s.kind[here]; c.outcome = 3; }
         } else if (s.green[here] > 0) { s.green[here]--; s.soil[here]++; c.outcome = 6; } else c.outcome = 0;
       } else if (name === 'wait') c.outcome = 0;
       else if (name === 'bite') {
@@ -314,7 +315,7 @@ class Population {
       c.reward = c.energy - before;
     }
     const survivors = [];
-    for (const c of cs) { if (c.energy <= 0) { this.deaths++; s.soil[c.y * CFG.w + c.x] += c.carried + c.energy; c.carried = 0; c.energy = 0; this.forget(c); c.dead = true; if (this.onDeath) this.onDeath(c); continue; } survivors.push(c); }
+    for (const c of cs) { if (c.energy <= 0) { this.deaths++; s.soil[c.y * CFG.w + c.x] += c.carried + c.energy + c.gut.length; c.carried = 0; c.energy = 0; c.gut.length = 0; this.forget(c); c.dead = true; if (this.onDeath) this.onDeath(c); continue; } survivors.push(c); }
     this.creatures = survivors; this.reindex();
     const children = [];
     for (const c of this.creatures) {
