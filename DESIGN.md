@@ -252,3 +252,35 @@ cadence-world/
   and one fewer thing to learn. An action lets a lineage evolve restraint. v0 automatic.
 - Whether the world genes include the search horizon at all, or the horizon is fixed at one step.
   Two-step search is what made S02's requests reachable; v0 fixes one step and W2 reopens it.
+
+## 10. First measurement: what the world selects (2026-09-17)
+
+The page's simulation core, run headless in node for 6,000 ticks on two seeds
+(`receipts/probe-2026-09-17/`, `probe.js` is the core of `web/index.html` with a logger). Every
+tick conserves mass. The population settles near 1,000 creatures; the mean age at death is about
+300 ticks.
+
+**At the page's prices** (0.01 per 256 cells, 0.002 per active cell) the population drifts to
+smaller brains: the mean expansion falls from 261 cells to 183 and 227, the 128-cell genome grows
+from 7 per cent to 69 and 42 per cent, and the active count falls from 8 to 5. Lifetime at death
+by brain size, median over both seeds: 128 cells 296, 256 cells 325 to 328, 512 cells 226 to 236,
+1,024 cells 123 to 203.
+
+**At a quarter of the price** (0.01 per 1,024 cells, 0.0005 per active cell) the mean rises to
+327 and 359 cells and the 512- and 1,024-cell genomes hold 26 to 38 per cent of the population,
+but the order of lifetimes is the same: 256 cells live longest (366 to 373), 1,024 shortest (218 to
+234).
+
+So the price is not the only thing holding brain size down. In this world a 3 by 3 window of food
+and a few active cells is enough to forage, a life of 300 ticks is too short for a large code to be
+revisited often enough to fill its records, and nothing in the substrate rewards predicting beyond
+the window. The genes that do move are the cheap ones: the learning rate rises (0.2 to 0.29), the
+exploration rises (0.1 to 0.18), and speech and ears drift to 20 to 50 per cent under no selection
+that this measurement can see.
+
+What follows from this for W2: the observer's complexity is selected by what the world makes
+worth predicting. The next step is a substrate feature a small brain cannot handle and a larger one
+can: food that grows only where the soil is rich, so that remembering where the soil is pays; a
+poison food kind told apart only by a second window field; or a night in which nothing can be
+seen and the last reading must carry the decision. Each is one rule, each keeps the physics, and
+each is measured the same way, by the lifetime-by-brain-size table against the run before it.
