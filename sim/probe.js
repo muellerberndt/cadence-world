@@ -4,6 +4,7 @@
 // census, and the symbol statistics over the last quarter of the run.
 const CW = require('./core.js');
 const rules = JSON.parse(process.argv[2] || '{}'), T = +process.argv[3] || 8000, seed = +process.argv[4] || 1;
+const prices = JSON.parse(process.argv[5] || '{}'); Object.assign(CW.POP, prices); // optional price overrides, e.g. '{"read":0.0001}'
 const sub = new CW.Substrate(seed, rules), pop = new CW.Population(sub, seed + 100); const m0 = pop.mass;
 const lifeByCells = {}, lifeByCortices = {}, lifeByHorizon = {}, lifeByRadius = {}, lifeByHalves = {};
 const push = (t, k, v) => (t[k] = t[k] || []).push(v);
@@ -45,5 +46,5 @@ const shuffled = counts => { // the mutual information after the symbols are per
   const c2 = counts.map(r => r.map(() => 0)); pairs.forEach((p, i) => { c2[sy[i]][p[1]]++; }); return CW.mutualInformation(c2);
 };
 const symbols = {}; for (const k of Object.keys(joint)) { const n = joint[k].flat().reduce((a, b) => a + b, 0); symbols[k] = { n, mi: +CW.mutualInformation(joint[k]).toFixed(4), chance: +shuffled(joint[k]).toFixed(4) }; }
-console.log(JSON.stringify({ final: true, rules, seed, T, lifeByCells: table(lifeByCells), lifeByCortices: table(lifeByCortices), lifeByHorizon: table(lifeByHorizon), lifeByRadius: table(lifeByRadius), lifeByHalves: table(lifeByHalves), symbols,
+console.log(JSON.stringify({ final: true, rules, seed, T, prices, lifeByCells: table(lifeByCells), lifeByCortices: table(lifeByCortices), lifeByHorizon: table(lifeByHorizon), lifeByRadius: table(lifeByRadius), lifeByHalves: table(lifeByHalves), symbols,
   rewardPerTick: { hears: heardReward[1] ? +(heardReward[0] / heardReward[1]).toFixed(4) : null, deaf: deafReward[1] ? +(deafReward[0] / deafReward[1]).toFixed(4) : null } }));

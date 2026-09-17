@@ -1,0 +1,6 @@
+base {}
+bite {"bite":true}
+rock_bite {"rock":true,"bite":true}
+ripen_rock_bite {"ripen":true,"rock":true,"bite":true}
+digest_bite {"digest":true,"bite":true}
+night_bite {"night":true,"bite":true}

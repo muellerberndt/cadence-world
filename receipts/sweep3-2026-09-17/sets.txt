@@ -1,0 +1,5 @@
+digest {"digest":true}
+digest_night {"digest":true,"night":true}
+digest_bite {"digest":true,"bite":true}
+digest_ripen_rock {"digest":true,"ripen":true,"rock":true}
+digest_ripen_rock_bite {"digest":true,"ripen":true,"rock":true,"bite":true}

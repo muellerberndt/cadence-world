@@ -258,7 +258,7 @@ class Population {
   constructor(sub, seed) {
     this.sub = sub; this.rules = sub.rules; this.rng = new Mulberry(seed); this.nextId = 0; this.creatures = []; this.births = 0; this.deaths = 0;
     this.count = new Int32Array(N); this.sum = new Float64Array(N); this.sumsq = new Float64Array(N); this.sumTick = new Float64Array(N);
-    this.occ = new Int32Array(N).fill(-1); this.spoken = []; this.bitten = []; this.bites = 0; this.available = layoutFor(this.rules, 1, 0).available; this.onDeath = null;
+    this.occ = new Int32Array(N).fill(-1); this.spoken = []; this.bitten = []; this.events = []; this.bites = 0; this.available = layoutFor(this.rules, 1, 0).available; this.onDeath = null;
     this.founder = () => firstGenome(this.rng, this.available);
     for (let k = 0; k < POP.initial; k++) {
       const x = (this.rng.random() * CFG.w) | 0, y = (this.rng.random() * CFG.h) | 0, i = y * CFG.w + x;
@@ -269,7 +269,7 @@ class Population {
   }
   make(x, y, energy, g, lineage, parent) {
     const id = this.nextId++;
-    return { id, x, y, energy, g, brain: new Brain(g, this.rules), lineage: lineage === null ? id : lineage, parent, born: this.sub.tick, age: 0, last: 5, outcome: 0, heard: 0, symbol: 0, symbolPrev: 0, lastKind: 2, carried: 0, gut: [], reward: 0, mem: new Map(), slot: -1 };
+    return { id, x, y, energy, g, brain: new Brain(g, this.rules), lineage: lineage === null ? id : lineage, parent, born: this.sub.tick, age: 0, last: 5, outcome: 0, heard: 0, symbol: 0, symbolPrev: 0, lastKind: 2, carried: 0, gut: [], reward: 0, mem: new Map(), slot: -1, px: x, py: y, face: 2, eats: 0, bites: 0, bitten: 0 };
   }
   spawn(x, y, energy, g, lineage, parent) { const c = this.make(x, y, energy, g, lineage, parent); this.creatures.push(c); return c; }
   get held() { let m = 0; for (const c of this.creatures) m += c.energy + c.carried + c.gut.length; return m; }
@@ -291,8 +291,8 @@ class Population {
     return 0;
   }
   step() {
-    const s = this.sub, cs = this.creatures, n = cs.length, R = this.rules; this.reindex(); this.spoken.length = 0; this.bitten.length = 0;
-    for (const c of cs) { c.symbolPrev = c.symbol; c.symbol = 0; }
+    const s = this.sub, cs = this.creatures, n = cs.length, R = this.rules; this.reindex(); this.spoken.length = 0; this.bitten.length = 0; this.events.length = 0;
+    for (const c of cs) { c.symbolPrev = c.symbol; c.symbol = 0; c.px = c.x; c.py = c.y; }
     const order = new Int32Array(n); for (let i = 0; i < n; i++) order[i] = i;
     const draws = new Float64Array(Math.max(n - 1, 0)); for (let i = 0; i < draws.length; i++) draws[i] = this.rng.random();
     for (let i = n - 1; i > 0; i--) { const j = (draws[n - 1 - i] * (i + 1)) | 0; const t = order[i]; order[i] = order[j]; order[j] = t; }
@@ -307,25 +307,27 @@ class Population {
       const here = c.y * CFG.w + c.x;
       if (a < 4) {
         const [dx, dy] = DIRS[a]; const nx = (c.x + dx + CFG.w) % CFG.w, ny = (c.y + dy + CFG.h) % CFG.h, ni = ny * CFG.w + nx;
+        c.face = a;
         if (this.occ[ni] < 0 && !s.rock[ni]) { this.occ[here] = -1; this.occ[ni] = k; c.x = nx; c.y = ny; moved = true; c.outcome = 1; } else c.outcome = 2;
       } else if (name === 'eat') {
         if (s.food[here] > 0) {
           s.food[here]--;
-          if (R.kinds && c.lastKind === s.kind[here] && this.rng.random() < 0.5) { s.food[here]++; c.outcome = 6; } /* the same kind again digests half the time; the unit stays otherwise */ else { if (R.digest) c.gut.push(s.tick + CFG.digestTicks); else c.energy++; c.lastKind = s.kind[here]; c.outcome = 3; }
-        } else if (s.green[here] > 0) { s.green[here]--; s.soil[here]++; c.outcome = 6; } else c.outcome = 0;
+          if (R.kinds && c.lastKind === s.kind[here] && this.rng.random() < 0.5) { s.food[here]++; c.outcome = 6; } /* the same kind again digests half the time; the unit stays otherwise */ else { if (R.digest) c.gut.push(s.tick + CFG.digestTicks); else c.energy++; c.lastKind = s.kind[here]; c.outcome = 3; c.eats++; this.events.push({ kind: 'eat', c }); }
+          if (c.outcome === 6) this.events.push({ kind: 'spoiled', c });
+        } else if (s.green[here] > 0) { s.green[here]--; s.soil[here]++; c.outcome = 6; this.events.push({ kind: 'unripe', c }); } else c.outcome = 0;
       } else if (name === 'wait') c.outcome = 0;
       else if (name === 'bite') {
         c.outcome = 0; extra = POP.bite;
-        for (const [dx, dy] of DIRS) { const j = this.occ[((c.y + dy + CFG.h) % CFG.h) * CFG.w + (c.x + dx + CFG.w) % CFG.w]; if (j < 0) continue; const v = cs[j]; const take = Math.min(3, v.energy); v.energy -= take; c.energy += take; v.outcome = 7; c.outcome = 5; this.bites++; this.bitten.push(v); break; }
-      } else if (name === 'dig') { if (c.carried === 0 && s.soil[here] > 0) { s.soil[here]--; c.carried = 1; c.outcome = 3; } else c.outcome = 0; }
-      else if (name === 'drop') { if (c.carried) { s.soil[here]++; c.carried = 0; c.outcome = 3; } else c.outcome = 0; }
-      else { c.symbol = a - b.actions.indexOf('say 1') + 1; c.outcome = 4; this.spoken.push(c); }
+        for (const [dx, dy] of DIRS) { const j = this.occ[((c.y + dy + CFG.h) % CFG.h) * CFG.w + (c.x + dx + CFG.w) % CFG.w]; if (j < 0) continue; const v = cs[j]; const take = Math.min(3, v.energy); v.energy -= take; c.energy += take; v.outcome = 7; c.outcome = 5; this.bites++; c.bites++; v.bitten++; c.face = DIRS.findIndex(d => d[0] === dx && d[1] === dy); this.bitten.push(v); this.events.push({ kind: 'bite', c, v, take }); break; }
+      } else if (name === 'dig') { if (c.carried === 0 && s.soil[here] > 0) { s.soil[here]--; c.carried = 1; c.outcome = 3; this.events.push({ kind: 'dig', c }); } else c.outcome = 0; }
+      else if (name === 'drop') { if (c.carried) { s.soil[here]++; c.carried = 0; c.outcome = 3; this.events.push({ kind: 'drop', c }); } else c.outcome = 0; }
+      else { c.symbol = a - b.actions.indexOf('say 1') + 1; c.outcome = 4; this.spoken.push(c); this.events.push({ kind: 'speak', c, symbol: c.symbol }); }
       const price = POP.base + b.price + POP.read * POP.imagine * b.readUnits * b.imagined + (moved ? POP.move : 0) + (c.outcome === 4 ? POP.emit : 0) + extra;
       if (this.rng.random() < price) { c.energy--; s.soil[c.y * CFG.w + c.x]++; }
       c.reward = c.energy - before;
     }
     const survivors = [];
-    for (const c of cs) { if (c.energy <= 0) { this.deaths++; s.soil[c.y * CFG.w + c.x] += c.carried + c.energy + c.gut.length; c.carried = 0; c.energy = 0; c.gut.length = 0; this.forget(c); c.dead = true; if (this.onDeath) this.onDeath(c); continue; } survivors.push(c); }
+    for (const c of cs) { if (c.energy <= 0) { this.deaths++; s.soil[c.y * CFG.w + c.x] += c.carried + c.energy + c.gut.length; c.carried = 0; c.energy = 0; c.gut.length = 0; this.forget(c); c.dead = true; c.diedAt = s.tick; this.events.push({ kind: 'die', c }); if (this.onDeath) this.onDeath(c); continue; } survivors.push(c); }
     this.creatures = survivors; this.reindex();
     const children = [];
     for (const c of this.creatures) {
@@ -337,7 +339,7 @@ class Population {
       const nx = (c.x + dx + CFG.w) % CFG.w, ny = (c.y + dy + CFG.h) % CFG.h;
       const share = c.energy >> 1; c.energy -= share;
       const child = this.make(nx, ny, share, mutate(c.g, this.rng, this.available), c.lineage, c.id);
-      this.occ[ny * CFG.w + nx] = 1; children.push(child); this.births++;
+      this.occ[ny * CFG.w + nx] = 1; children.push(child); this.births++; this.events.push({ kind: 'birth', c: child, parent: c });
     }
     this.creatures.push(...children); this.reindex();
   }
