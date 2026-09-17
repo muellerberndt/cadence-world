@@ -115,7 +115,7 @@
 
     <div>
       <h2>The selected brain, live</h2>
-      <canvas id="brain" width="340" height="360"></canvas>
+      <canvas id="brain" width="340" height="440"></canvas>
       <div id="believed" class="believed">Click a creature.</div>
       <div class="row" style="margin-top:6px"><button class="act" id="follow" aria-pressed="false">Follow it</button><button class="act" id="eldest">The eldest</button><button class="act" id="biggest">The biggest brain</button><button class="act" id="hunter">A hunter</button><button class="act" id="halves">Two halves</button></div>
     </div>
@@ -751,7 +751,7 @@ function drawBrain() {
     bctx.fillText(line, gx, ly);
   });
   b.cortices.forEach((cx, ci) => { if (!(cx.mask & bit('inner'))) return; const gx = gx0 + ci * (gw + 8) + gw / 2; b.cortices.forEach((o, oi) => { const ox = gx0 + oi * (gw + 8) + gw / 2; bctx.strokeStyle = '#f0c56a'; bctx.lineWidth = 1.2; bctx.beginPath(); if (oi === ci) { bctx.arc(gx, gy - 6, 4, 0, 7); } else { bctx.moveTo(ox, gy - 3); bctx.quadraticCurveTo((ox + gx) / 2, gy - 12, gx, gy - 3); } bctx.stroke(); }); });
-  const ax = 12, ay = 258, bw = 150, rowH = Math.min(12, 90 / b.A); const names = b.actions;
+  const ax = 12, ay = 318, bw = 150, rowH = 12; const names = b.actions;
   const sc = b.score || b.q; let lo = Infinity, hi = -Infinity;
   for (let a = 0; a < b.A; a++) { lo = Math.min(lo, b.q[a], sc[a]); hi = Math.max(hi, b.q[a], sc[a]); } const span = Math.max(hi - lo, 0.05);
   const cols = b.A > 8 ? 2 : 1, perCol = Math.ceil(b.A / cols);
