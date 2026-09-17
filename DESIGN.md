@@ -284,3 +284,53 @@ can: food that grows only where the soil is rich, so that remembering where the 
 poison food kind told apart only by a second window field; or a night in which nothing can be
 seen and the last reading must carry the decision. Each is one rule, each keeps the physics, and
 each is measured the same way, by the lifetime-by-brain-size table against the run before it.
+
+## 11. A world that rewards planning (direction of 2026-09-17, evening)
+
+Bernhard, on the first measurement: design the world in a more flexible way that rewards
+innovative ideas and planning. Two things have to change together, since neither alone can show
+anything: the world has to contain payoffs that are reachable only through a sequence of actions
+whose intermediate steps pay nothing, and the brain has to have a horizon at all. The page's brain
+today is a one-step action-value read; there is nothing in it that could plan, so no world could
+select for planning yet.
+
+**The brain side: a horizon gene.** The S02 agent's machinery, imagined consequences over
+candidate actions and a short best-first search through them, becomes the creature's, with the
+horizon a gene: 0 is the reflex of today, 1 imagines each action's next reading through a forward
+head (food in the window, own energy), 2 and 3 search. Every imagined reading is a read, and a read
+costs mass, so a horizon has a price like every other gene, and the measurement is whether it
+sweeps. This needs the forward head beside the reward record, which is the S02 world head.
+
+**The world side: rules that keep the four commitments and make a sequence worth something.**
+Each is one rule; each is measured by the lifetime-by-brain-size table and the horizon gene's
+frequency against the run before it.
+
+1. *Ripening.* Food has stages. A unit that has just grown is unripe and yields nothing when eaten
+   (it returns to the soil); it ripens after a number of ticks in the light. Eating on sight is
+   then wrong; remembering where unripe food stands and returning pays. A grazer loses to a
+   creature with a map.
+2. *Rock.* A static set of cells per world holds no soil and cannot be entered: a maze. Paths matter,
+   the shortest way to remembered food is a plan, and a neighbour around a corner sees what the
+   creature cannot, which is what a heard symbol could carry.
+3. *Night.* Where the light is below a threshold the window reads missing (the missingness flags
+   the S02 reading already has), so the last readings must carry the decision through the dark.
+4. *Two kinds of food.* Two soil nutrients, two food kinds, and a unit of one kind yields mass only
+   when the last unit eaten was the other kind. Sequencing pays; the single field that tells the
+   kinds apart is worth a larger reading.
+5. *Bite.* A creature may take units from an adjacent creature; the bite costs and the victim's
+   lineage hue is in the window. Defence is grouping, flight and warning, which is the classical
+   driver of brain size (the arms race), and the first pressure under which a symbol could mean
+   something to a listener that is not kin.
+6. *Carrying soil.* A creature may pick up a unit of soil and drop it elsewhere. Rock and soil
+   then become something the population shapes: dams against diffusion, walls, gardens. This is
+   the rule under which an innovation is visible on the page, since the map itself changes.
+
+**Order.** Ripening and rock first, since they reward a map and a route with no new action;
+then the horizon gene; then night and the two kinds, which reward a larger reading; then bite and
+carrying, which open the social and constructive niches. Lifespan is the other constraint on brain
+size: at 300 ticks a large code is never revisited enough, so the split threshold becomes a gene
+(restraint) and the energy cap rises, and whether lives lengthen is itself a readout.
+
+**What stays.** Conservation, one light, locality, a price per computation, no fitness function.
+The three views and the brain scan stay as they are; the brain scan gains the imagined readings
+when the horizon is above 0.
