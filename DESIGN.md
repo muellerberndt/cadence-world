@@ -334,3 +334,38 @@ size: at 300 ticks a large code is never revisited enough, so the split threshol
 **What stays.** Conservation, one light, locality, a price per computation, no fitness function.
 The three views and the brain scan stay as they are; the brain scan gains the imagined readings
 when the horizon is above 0.
+
+## 12. The second build: rules as flags, cortices as evolved masks, a horizon (2026-09-17, night)
+
+`sim/core.js` is now the whole simulation, shared by the page (inlined by `web/build.py`) and by
+the node probe (`sim/probe.js`, summarised by `sim/summarize.py`). What changed against the first
+page:
+
+**The reading is a set of field groups**, each present when the rule that needs it is on: the
+food, the unripe food, the other creatures, the rock, the kind of ground and the kin in the window;
+the creature's energy, the light, its last outcome, whether it is dark, what it carries, and what it
+heard. A brain is a list of cortices. Each cortex has a mask over the groups, a size, an active
+count, a fan-in and a wiring seed; its expansion draws only from the units its mask names and it
+holds its own records. The action value is the sum over cortices of the mean record the reading
+touches in each, and after the outcome every cortex writes the shared error into exactly its own
+touched cells. Mutation at a split flips mask bits, resizes and rewires cortices, and adds (a copy
+with one bit changed and fresh wiring) or removes one, up to four. Whether a creature hears is
+therefore not a gene: it is whether any cortex reads the heard group. The founders read every
+group the world offers through one cortex, and evolution prunes and splits from there; a founder
+that reads only the original five groups dies out in any world whose rule it cannot see (the
+two-kinds world, the all-rules world), which is the first thing the sweep showed.
+
+**The horizon is a gene** (0, 1, 2). Above 0 the brain imagines the reading each move would
+produce, as far as the window can tell (the window groups shift by the move, the cells that come
+into view are unknown, a move into rock or into another creature is blocked), reads the imagined
+reading through the same cortices, and scores the move by half its record and half the discounted
+best value found; at 2 it searches one move further. Every imagined reading is paid at a tenth of a
+read. The real reading's code is kept for learning, which stays one write per witnessed outcome.
+
+**The rules**, each one flag: ripening (growth makes unripe food that ripens in the light; eating
+it unripe returns it to the soil), rock (blobs of impassable cells without soil), night (where the
+light is below 0.35 the window reads nothing), two kinds of ground (a unit of the kind last eaten
+digests half the time), biting (take up to three units from an adjacent creature at a price; kin
+in the window is a group), carrying soil (dig and drop; fertility scales with the soil up to four
+units, in every world). The world is grown for 400 ticks before life is placed. The split threshold
+is a gene (24 to 64), so lifespan is selected too.

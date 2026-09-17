@@ -17,15 +17,29 @@ objective. Energy and death select.
 `DESIGN.md` states the idea, the rules, why signalling and memory can arise, the picture, the
 stages and their gates, and what is not promised.
 
+## The simulation core
+
+`sim/core.js` holds the whole simulation with no DOM: the substrate, the rules as flags, the
+genome (a list of cortices, each a mask over the reading's field groups with its own cells and
+records; the window radius, the horizon, the symbols, the split threshold, the learning genes),
+the brain and the population. `sim/probe.js` runs one world headless in node and prints the
+population statistics, the lifetime-at-death tables by brain size, cortex count and horizon, the
+mask census and the symbol statistics; `sim/summarize.py` tabulates a folder of such runs.
+
+```bash
+node sim/probe.js '{"ripen":true,"rock":true,"bite":true}' 8000 1 > runs/rrb_s1.jsonl
+python3 sim/summarize.py runs
+```
+
 ## The page
 
-`web/index.html` is the whole simulation in one file: the substrate, the population, the brains,
+`web/index.html` is built by `python3 web/build.py` from `web/page.html` with `sim/core.js` inlined, so the page and the probe run the same code. It is the whole simulation in one file: the substrate, the population, the brains,
 a three.js view with an orbiting camera, the three views (what is, what is known, what one
 believes), a live brain scan of the selected creature, the lineages, and the population's brain
 size and speech over time. Open it in a browser; it loads three.js and two typefaces from a CDN
 and nothing else.
 
-Keys: `1` `2` `3` switch the view, space pauses. Drag to orbit, wheel to zoom, shift-drag to pan,
+The rules of the next world are checkboxes. Keys: `1` `2` `3` switch the view, space pauses. Drag to orbit, wheel to zoom, shift-drag to pan,
 click a creature to open its brain, "Follow it" to keep the camera on it.
 
 ## The Python world
