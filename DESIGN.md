@@ -412,3 +412,31 @@ rock is beyond the founders and goes extinct.
 two-cortex mutant pays double before any benefit of specialising can show. Sweep 4 adds a
 cost-neutral split (one cortex becomes two halves of half the cells and half the active count,
 the field groups partitioned between them) so that specialisation competes on function alone.
+
+## 14. Sweep 4: the split, and what biting does to seeing (2026-09-18, early)
+
+Six biting-centred worlds, two seeds, 6,000 ticks, with the cost-neutral split mutation
+(`receipts/sweep4-2026-09-17/`).
+
+**Specialised brains become common and are close to neutral.** The mean cortex count is 1.7 to
+1.9 in `bite`, `rock_bite` and `night_bite` (1.05 to 1.25 in the base world), and in `rock_bite`
+two-cortex brains are the plurality (194 against 166 one-cortex brains at the end of one seed).
+Lifetime at death is within a few ticks across one, two and three cortices (45, 43, 36 in
+`rock_bite`; 39, 35, 31 in `bite`), so a brain split into halves lives about as long as the
+monolith it came from. Brains that read their own previous code stay at 1 to 6 per cent and
+live shorter. Two cortices that divide the senses between them are selected as nearly neutral;
+two cortices where one reads the other are not selected.
+
+**Biting selects blindness.** The mask census at the end: the food group is read by 2 to 29 per
+cent of creatures in every biting world (`bite` 9 and 29, `digest_bite` 2 and 3,
+`night_bite` 7 and 8, `ripen_rock_bite` 7 and 7, `rock_bite` 63 and 8), against 101 to 102 per
+cent in the base world. The others and last-outcome groups stay at or above one per creature.
+The food group is the most expensive sense, 81 units for a 3 by 3 window at 0.0004 per unit,
+and a bite pays three units without it; a creature that stops looking and eats when it happens
+to stand on food, biting whatever is beside it, outlives one that pays to see. The whole
+population ends as blind biters living off chance grazing and the redistribution of what the
+few remaining grazers find. This is a price, not a law: sweep 5 sets the read price at a quarter
+and at zero to see where seeing survives.
+
+**The horizon splits by niche.** Horizon 0 holds 25 to 75 per cent of biters, since a bite's
+payoff is beside the creature; grazers keep horizon 1.
