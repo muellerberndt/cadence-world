@@ -19,7 +19,7 @@ def load(path):
 
 def main(folder):
     files = sorted(Path(folder).glob("*.jsonl"))
-    print(f"{'run':28} {'alive':>5} {'age':>4} {'cells':>5} {'ctx':>4} {'hor':>4} {'rad':>4} {'spk':>4} {'hear':>4} {'sym':>4} | life by cells (median) | life by cortices | MI food/nb/kin vs chance | reward hears/deaf")
+    print(f"{'run':28} {'alive':>5} {'age':>4} {'cells':>5} {'ctx':>4} {'hor':>4} {'rad':>4} {'spk':>4} {'inr':>4} {'hlv':>4} | life by cells (median) | life by cortices | life plain/recurrent/halves | MI food/nb/kin vs chance | reward hears/deaf")
     for f in files:
         last, final = load(f)
         if not last:
@@ -29,10 +29,12 @@ def main(folder):
         by_cells = " ".join(f"{k}:{v['median']}" for k, v in sorted(life.items(), key=lambda kv: int(kv[0])) if v["n"] >= 30)
         byc = final["lifeByCortices"] if final else {}
         by_ctx = " ".join(f"{k}:{v['median']}({v['n']})" for k, v in sorted(byc.items()))
+        byh = final.get("lifeByHalves", {}) if final else {}
+        by_halves = " ".join(f"{k[:3]}:{v['median']}({v['n']})" for k, v in byh.items())
         sym = final["symbols"] if final else {}
         mi = " ".join(f"{sym[k]['mi']:.3f}/{sym[k]['chance']:.3f}" for k in ("food", "neighbour", "kin")) if sym else ""
         rw = final["rewardPerTick"] if final else {}
-        print(f"{f.stem:28} {last['alive']:>5} {last['age']:>4} {last['cells']:>5} {last['cortices']:>4} {last['horizon']:>4} {last['radius']:>4} {last['speak']:>4} {last['hears']:>4} {last['symbolsMean']:>4} | {by_cells:22} | {by_ctx:16} | {mi:26} | {rw.get('hears')}/{rw.get('deaf')}"
+        print(f"{f.stem:28} {last['alive']:>5} {last['age']:>4} {last['cells']:>5} {last['cortices']:>4} {last['horizon']:>4} {last['radius']:>4} {last['speak']:>4} {last.get('inner', 0):>4} {last.get('halves', 0):>4} | {by_cells:22} | {by_ctx:16} | {by_halves:22} | {mi:26} | {rw.get('hears')}/{rw.get('deaf')}"
               + ("" if final else "  (running)"))
     print()
     for f in files:

@@ -19,7 +19,8 @@ const POP = { initial: 300, birth: 12, max: 1500, base: 0.08, move: 0.05, emit: 
 const N = CFG.w * CFG.h;
 const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const OUTCOMES = ['none', 'moved', 'blocked', 'ate', 'spoke', 'bit', 'spoiled', 'bitten'];
-const GROUP_NAMES = ['food', 'occ', 'energy', 'out', 'light', 'green', 'rock', 'kind', 'lastkind', 'kin', 'dark', 'carried', 'heard'];
+const GROUP_NAMES = ['food', 'occ', 'energy', 'out', 'light', 'green', 'rock', 'kind', 'lastkind', 'kin', 'dark', 'carried', 'heard', 'inner'];
+const INNER_WIDTH = 16, MAX_CORTICES = 4; // the inner group: each cortex's code of the previous tick, folded onto 32 units
 const WINDOW_WIDTH = { food: 9, occ: 1, green: 4, rock: 1, kind: 1, kin: 1 }; // per-cell width of the window groups
 
 function actionsFor(rules, K) {
@@ -96,7 +97,8 @@ const bit = name => 1 << GROUP_NAMES.indexOf(name);
 const FIRST_MASK = bit('food') | bit('occ') | bit('energy') | bit('out') | bit('light');
 
 function firstGenome(rng, available) { // the founders read everything the world offers through one cortex; evolution prunes and splits it
-  const mask = available ? available.reduce((m, gi) => m | (1 << gi), 0) : FIRST_MASK;
+  const inner = GROUP_NAMES.indexOf('inner');
+  const mask = available ? available.filter(gi => gi !== inner).reduce((m, gi) => m | (1 << gi), 0) : FIRST_MASK;
   return { radius: 0, horizon: 0, symbols: 0, splitAt: 0, eps: 2, lr: 2, gamma: 2, hue: rng.random(),
     cortices: [{ mask, cells: 2, active: 1, fanin: 2, wiring: (rng.random() * 4294967296) >>> 0 }] };
 }
@@ -109,7 +111,7 @@ function mutate(g, rng, groupsAvailable) {
     if (rng.random() < 0.10) { const b = 1 << (groupsAvailable[(rng.random() * groupsAvailable.length) | 0]); const m = x.mask ^ b; if (m) x.mask = m; }
     if (rng.random() < 0.03) x.wiring = (rng.random() * 4294967296) >>> 0;
   }
-  if (rng.random() < 0.06 && c.cortices.length < 4) { // a new cortex: a copy of one, one bit changed, its own wiring
+  if (rng.random() < 0.06 && c.cortices.length < MAX_CORTICES) { // a new cortex: a copy of one, one bit changed, its own wiring
     const src = c.cortices[(rng.random() * c.cortices.length) | 0]; const x = Object.assign({}, src);
     const b = 1 << (groupsAvailable[(rng.random() * groupsAvailable.length) | 0]); if (x.mask ^ b) x.mask ^= b;
     x.wiring = (rng.random() * 4294967296) >>> 0; c.cortices.push(x);
@@ -131,6 +133,7 @@ function layoutFor(rules, r, K) {
   if (rules.night) add('dark', 1);
   if (rules.carry) add('carried', 1);
   add('heard', K + 1);
+  add('inner', INNER_WIDTH * MAX_CORTICES);
   const byName = {}; for (const g of groups) byName[g.name] = g;
   return { groups, byName, D: off, nWin, r, available: groups.map(g => GROUP_NAMES.indexOf(g.name)) };
 }
@@ -155,6 +158,9 @@ class Brain {
     this.cellsTotal = this.cortices.reduce((s, c) => s + c.M, 0);
     this.activeTotal = this.cortices.reduce((s, c) => s + c.k, 0);
     this.hears = this.cortices.some(c => c.mask & bit('heard'));
+    this.readsInner = this.cortices.some(c => c.mask & bit('inner'));
+    this.halves = this.cortices.length >= 2 && this.readsInner; // two interacting cortices: one reads another's code
+    this.inner = new Uint8Array(INNER_WIDTH * MAX_CORTICES);
     this.prevQ = null; this.prevAction = -1;
   }
   read(pop, c) {
@@ -176,6 +182,7 @@ class Brain {
     if (B.dark) x[B.dark.off] = s.dark(c.y * CFG.w + c.x) ? 1 : 0;
     if (B.carried) x[B.carried.off] = c.carried;
     x[B.heard.off + Math.min(c.heard, this.K)] = 1;
+    x.set(this.inner, B.inner.off);
   }
   codeOne(cx, x) {
     const { M, fanin, idx, w, act } = cx;
@@ -224,6 +231,7 @@ class Brain {
     if (u < this.eps) a = (rng.random() * this.A) | 0;
     else { let best = -Infinity; a = 0; for (let i = 0; i < this.A; i++) if (score[i] > best) { best = score[i]; a = i; } }
     for (const cx of this.cortices) cx.prevActive = cx.active.slice();
+    this.inner.fill(0); this.cortices.forEach((cx, ci) => { for (let j = 0; j < cx.k; j++) this.inner[ci * INNER_WIDTH + cx.active[j] % INNER_WIDTH] = 1; });
     this.prevQ = this.q.slice(); this.prevAction = a; this.score = score; return a;
   }
   learn(reward) { // one write into exactly the cells the previous reading touched, by the shared error
@@ -332,5 +340,5 @@ function mutualInformation(counts) { // counts: array of rows (symbol) of arrays
   return mi;
 }
 
-return { Mulberry, RULES, CFG, POP, N, DIRS, OUTCOMES, GROUP_NAMES, GENE, CORTEX, G, bit, Substrate, Brain, Population, actionsFor, layoutFor, mutate, firstGenome, mutualInformation };
+return { Mulberry, INNER_WIDTH, MAX_CORTICES, RULES, CFG, POP, N, DIRS, OUTCOMES, GROUP_NAMES, GENE, CORTEX, G, bit, Substrate, Brain, Population, actionsFor, layoutFor, mutate, firstGenome, mutualInformation };
 });

@@ -94,7 +94,7 @@
       <h2>The selected brain, live</h2>
       <canvas id="brain" width="340" height="360"></canvas>
       <div id="believed" class="believed">Click a creature.</div>
-      <div class="row" style="margin-top:6px"><button class="act" id="follow" aria-pressed="false">Follow it</button><button class="act" id="eldest">The eldest</button><button class="act" id="biggest">The biggest brain</button><button class="act" id="talker">A talker</button></div>
+      <div class="row" style="margin-top:6px"><button class="act" id="follow" aria-pressed="false">Follow it</button><button class="act" id="eldest">The eldest</button><button class="act" id="biggest">The biggest brain</button><button class="act" id="talker">A talker</button><button class="act" id="halves">Two halves</button></div>
     </div>
 
     <dl class="counters">
@@ -107,12 +107,13 @@
       <dt>mean brain cells / cortices</dt><dd id="c-cells">0 / 0</dd>
       <dt>mean horizon / reading units</dt><dd id="c-read">0 / 0</dd>
       <dt>speak / hear</dt><dd id="c-sym">0% / 0%</dd>
+      <dt>recurrent / two halves</dt><dd id="c-halves">0% / 0%</dd>
       <dt>bites this tick</dt><dd id="c-bites">0</dd>
       <dt>sun contrast</dt><dd id="c-sun">0.00</dd>
     </dl>
 
     <div>
-      <h2>Brain size, cortices and speech over time</h2>
+      <h2>Brain size, cortices, speech and two-halves brains over time</h2>
       <canvas id="complexity" width="340" height="70"></canvas>
     </div>
 
@@ -158,7 +159,7 @@
 'use strict';
 const { CFG, POP, N, DIRS, OUTCOMES, GROUP_NAMES, G, bit, Substrate, Population } = CW;
 const DEFAULT_RULES = { ripen: true, rock: true, night: false, kinds: false, bite: true, carry: false };
-const ABBREV = { food: 'food', occ: 'others', energy: 'energy', out: 'last', light: 'light', green: 'unripe', rock: 'rock', kind: 'kind', lastkind: 'digested', kin: 'kin', dark: 'dark', carried: 'carried', heard: 'heard' };
+const ABBREV = { food: 'food', occ: 'others', energy: 'energy', out: 'last', light: 'light', green: 'unripe', rock: 'rock', kind: 'kind', lastkind: 'digested', kin: 'kin', dark: 'dark', carried: 'carried', heard: 'heard', inner: 'the other cortices' };
 
 // ---------- the 3D world ----------
 const glCanvas = document.getElementById('gl');
@@ -294,6 +295,7 @@ function drawBrain() {
     for (const n of names) { if (bctx.measureText(line + n + ' ').width > gw) { bctx.fillText(line, gx, ly); ly += 10; line = ''; } line += n + ' '; }
     bctx.fillText(line, gx, ly);
   });
+  b.cortices.forEach((cx, ci) => { if (!(cx.mask & bit('inner'))) return; const gx = gx0 + ci * (gw + 8) + gw / 2; b.cortices.forEach((o, oi) => { const ox = gx0 + oi * (gw + 8) + gw / 2; bctx.strokeStyle = '#f0c56a'; bctx.lineWidth = 1.2; bctx.beginPath(); if (oi === ci) { bctx.arc(gx, gy - 6, 4, 0, 7); } else { bctx.moveTo(ox, gy - 3); bctx.quadraticCurveTo((ox + gx) / 2, gy - 12, gx, gy - 3); } bctx.stroke(); }); });
   // the records read: one bar per action, the score after the horizon's search as a tick
   const ax = 12, ay = 258, bw = 150, rowH = Math.min(12, 90 / b.A); const names = b.actions;
   const sc = b.score || b.q; let lo = Infinity, hi = -Infinity;
@@ -318,9 +320,9 @@ function drawComplexity() {
   if (history.length < 2) return;
   const n = history.length, maxCells = Math.max(...history.map(h => h.cells), 256);
   const line = (key, max, color) => { cxctx.strokeStyle = color; cxctx.lineWidth = 1.5; cxctx.beginPath(); history.forEach((h, i) => { const x = i / (n - 1) * (W - 2) + 1, y = H - 4 - (h[key] / max) * (H - 10); i ? cxctx.lineTo(x, y) : cxctx.moveTo(x, y); }); cxctx.stroke(); };
-  line('cells', maxCells, '#f0c56a'); line('cortices', 4, '#ddd6c6'); line('speak', 1, '#b6e264');
+  line('cells', maxCells, '#f0c56a'); line('cortices', 4, '#ddd6c6'); line('speak', 1, '#b6e264'); line('halves', 1, '#e0679a');
   cxctx.font = '10px IBM Plex Mono, monospace'; const h = history[n - 1];
-  cxctx.fillStyle = '#f0c56a'; cxctx.fillText(`cells ${h.cells | 0}`, 4, 10); cxctx.fillStyle = '#ddd6c6'; cxctx.fillText(`cortices ${h.cortices.toFixed(2)}`, 84, 10); cxctx.fillStyle = '#b6e264'; cxctx.fillText(`speak ${(100 * h.speak) | 0}%`, 190, 10);
+  cxctx.fillStyle = '#f0c56a'; cxctx.fillText(`cells ${h.cells | 0}`, 4, 10); cxctx.fillStyle = '#ddd6c6'; cxctx.fillText(`cortices ${h.cortices.toFixed(2)}`, 84, 10); cxctx.fillStyle = '#b6e264'; cxctx.fillText(`speak ${(100 * h.speak) | 0}%`, 190, 10); cxctx.fillStyle = '#e0679a'; cxctx.fillText(`halves ${(100 * h.halves) | 0}%`, 260, 10);
 }
 function lineagePanel() {
   const counts = new Map(), hueOf = new Map();
@@ -329,9 +331,9 @@ function lineagePanel() {
   document.getElementById('lineages').innerHTML = top.map(([l, n]) => `<div class="lineage"><i style="background:hsl(${hueOf.get(l) * 360 | 0} 70% 60%)"></i><div class="bar"><b style="width:${(100 * n / max) | 0}%;background:hsl(${hueOf.get(l) * 360 | 0} 60% 55%)"></b></div><span>${n}</span></div>`).join('') || '<span class="lineage">none alive</span>';
 }
 function stats() {
-  const cs = pop.creatures, n = Math.max(cs.length, 1); let cells = 0, ctx = 0, read = 0, speak = 0, hears = 0, hor = 0;
-  for (const c of cs) { cells += c.brain.cellsTotal; ctx += c.brain.cortices.length; read += c.brain.readUnits; speak += c.brain.K > 0; hears += c.brain.hears; hor += c.brain.horizon; }
-  return { cells: cells / n, cortices: ctx / n, read: read / n, speak: speak / n, hears: hears / n, horizon: hor / n };
+  const cs = pop.creatures, n = Math.max(cs.length, 1); let cells = 0, ctx = 0, read = 0, speak = 0, hears = 0, hor = 0, inner = 0, halves = 0;
+  for (const c of cs) { cells += c.brain.cellsTotal; ctx += c.brain.cortices.length; read += c.brain.readUnits; speak += c.brain.K > 0; hears += c.brain.hears; hor += c.brain.horizon; inner += c.brain.readsInner; halves += c.brain.halves; }
+  return { cells: cells / n, cortices: ctx / n, read: read / n, speak: speak / n, hears: hears / n, horizon: hor / n, inner: inner / n, halves: halves / n };
 }
 function counters() {
   const m = pop.mass; let seen = 0; for (let i = 0; i < N; i++) if (pop.count[i] > 0) seen++;
@@ -339,7 +341,7 @@ function counters() {
   set('c-tick', sub.tick); set('c-alive', pop.creatures.length); set('c-births', `${pop.births} / ${pop.deaths}`); set('c-mass', m);
   const ok = document.getElementById('c-ok'); ok.textContent = m === mass0 ? 'yes' : 'NO'; ok.className = m === mass0 ? 'ok' : 'bad';
   set('c-seen', `${(100 * seen / N).toFixed(0)}%`); set('c-sun', sub.contrast.toFixed(2));
-  set('c-cells', `${st.cells.toFixed(0)} / ${st.cortices.toFixed(2)}`); set('c-read', `${st.horizon.toFixed(2)} / ${st.read.toFixed(0)}`); set('c-sym', `${(100 * st.speak).toFixed(0)}% / ${(100 * st.hears).toFixed(0)}%`); set('c-bites', pop.bitten.length);
+  set('c-cells', `${st.cells.toFixed(0)} / ${st.cortices.toFixed(2)}`); set('c-read', `${st.horizon.toFixed(2)} / ${st.read.toFixed(0)}`); set('c-sym', `${(100 * st.speak).toFixed(0)}% / ${(100 * st.hears).toFixed(0)}%`); set('c-bites', pop.bitten.length); set('c-halves', `${(100 * st.inner).toFixed(0)}% / ${(100 * st.halves).toFixed(0)}%`);
   const b = document.getElementById('believed');
   if (chosen && chosen.dead) b.innerHTML = `<b>creature ${chosen.id}</b> died at tick ${chosen.diedAt}. Its records left the known world with it.`;
   else if (chosen) b.innerHTML = `<b>creature ${chosen.id}</b>, lineage ${chosen.lineage}, age ${chosen.age}, holds ${chosen.energy}. ${chosen.brain.cortices.length} ${chosen.brain.cortices.length > 1 ? 'cortices' : 'cortex'}, ${chosen.brain.cellsTotal} cells, reads ${chosen.brain.readUnits} units. Last: ${chosen.brain.actions[chosen.last]} → ${OUTCOMES[chosen.outcome]}. Knows ${chosen.mem.size} cells.`;
@@ -372,6 +374,7 @@ document.getElementById('reseed').addEventListener('click', reseed);
 followBtn.addEventListener('click', () => { if (!chosen) return; cam.follow = !cam.follow; followBtn.setAttribute('aria-pressed', String(cam.follow)); if (cam.follow) cam.dist = Math.min(cam.dist, 28); });
 document.getElementById('eldest').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.age > b.age) b = c; focus(b); });
 document.getElementById('biggest').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.brain.cellsTotal * c.brain.cortices.length > b.brain.cellsTotal * b.brain.cortices.length) b = c; focus(b); });
+document.getElementById('halves').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (c.brain.halves && (!b || c.age > b.age)) b = c; focus(b); });
 document.getElementById('talker').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (c.brain.K > 0 && c.brain.hears && (!b || c.age > b.age)) b = c; if (!b) for (const c of pop.creatures) if (c.brain.K > 0 && (!b || c.age > b.age)) b = c; focus(b); });
 document.getElementById('rain').addEventListener('click', () => { let moved = 0, guard = 0; const r = new CW.Mulberry(sub.tick); while (moved < 800 && guard++ < 100000) { const i = (r.random() * N) | 0; if (!sub.rock[i] && sub.soil[i] > 0 && sub.food[i] + sub.green[i] < CFG.foodCap) { sub.soil[i]--; sub.food[i]++; moved++; } } });
 document.getElementById('eclipse').addEventListener('click', () => { sub.eclipse = 1800; });
