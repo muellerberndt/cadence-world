@@ -369,3 +369,46 @@ digests half the time), biting (take up to three units from an adjacent creature
 in the window is a group), carrying soil (dig and drop; fertility scales with the soil up to four
 units, in every world). The world is grown for 400 ticks before life is placed. The split threshold
 is a gene (24 to 64), so lifespan is selected too.
+
+## 13. What the worlds select (sweeps 1 to 3, 2026-09-17, night)
+
+Receipts in `receipts/sweep*-2026-09-17/`, one file per world and seed, summarised by
+`sim/summarize.py`. Sweep 1: fourteen rule sets, two seeds, 8,000 ticks, founders on the full
+reading. Sweep 2: ten worlds with the inner group available, 6,000 ticks. Sweep 3: the digestion
+rule alone and in four combinations.
+
+**The horizon is selected everywhere.** In every world but the two-kinds ones, 93 to 98 per cent of
+the population ends with horizon 1: one move of lookahead through the creature's own records pays
+its price. Horizon 2 stays at 1 to 3 per cent. In the biting worlds horizon 0 keeps 25 to 45 per
+cent, since a biter's payoff is in the cell next to it.
+
+**Biting is the rule that grows brains, and it grows them into two niches.** Under biting the
+mean cortex count is 1.1 to 1.3 against 1.01 to 1.04 elsewhere, brains of 512 to 2,048 cells live
+as long as brains of 256 (elsewhere the 256-cell brain lives longest and the 1,024-cell brain
+shortest), and the mask census splits: in `rock_bite` only 20 to 54 per cent of creatures still
+read the food group, in `ripen_rock_bite_night` 2 to 3 per cent, while the others, kin, energy and
+heard groups stay at or above 1 per creature. Half the population has given up seeing food and
+lives by biting those who do, eating blindly when it happens to stand on food. Grazers and
+predators, with no rule that names either.
+
+**Speech means nothing yet.** The mutual information between the symbol uttered and the food under
+the speaker, a neighbour beside it or kin beside it is 0.001 to 0.005 bits against a permutation
+chance of 0.000: above chance, but a hundred times too small to call a signal. Creatures that hear
+earn more per tick than the deaf in the biting worlds (0.21 to 0.56 against 0.17 to 0.44), which
+is confounded with who the biters are. The share of speakers drifts between 2 and 59 per cent with
+no consistent direction.
+
+**Two interacting cortices are not selected in these worlds.** With the inner group available
+(each cortex's previous code, readable by any cortex), 1 to 6 per cent of creatures read it in
+every world, which is the mutation supply, and brains with two cortices where one reads it die
+younger than one-cortex brains (median 25 to 47 against 54 to 107 ticks). The reason is in the
+reading: the outcome group already carries one tick of memory, and no rule here needs more. The
+digestion delay (a unit eaten becomes energy six ticks later) was built to need it; the population
+learns eating by the proxy of standing on food, the value spreads through the states between the
+eat and the reward, and the inner group is again at 2 to 4 per cent. Digestion with ripening and
+rock is beyond the founders and goes extinct.
+
+**The add-a-cortex mutation was the wrong test.** It copies a cortex and its price, so a
+two-cortex mutant pays double before any benefit of specialising can show. Sweep 4 adds a
+cost-neutral split (one cortex becomes two halves of half the cells and half the active count,
+the field groups partitioned between them) so that specialisation competes on function alone.

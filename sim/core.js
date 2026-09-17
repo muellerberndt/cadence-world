@@ -117,6 +117,16 @@ function mutate(g, rng, groupsAvailable) {
     x.wiring = (rng.random() * 4294967296) >>> 0; c.cortices.push(x);
   }
   if (rng.random() < 0.06 && c.cortices.length > 1) c.cortices.splice((rng.random() * c.cortices.length) | 0, 1);
+  if (rng.random() < 0.06 && c.cortices.length < MAX_CORTICES) { // a split: one cortex becomes two halves at the same total cost, the groups partitioned between them
+    const i = (rng.random() * c.cortices.length) | 0, x = c.cortices[i];
+    const bits = []; for (let b = 0; b < GROUP_NAMES.length; b++) if (x.mask & (1 << b)) bits.push(b);
+    if (x.cells >= 1 && bits.length >= 2) {
+      let ma = 0, mb = 0; for (const b of bits) { if (rng.random() < 0.5) ma |= 1 << b; else mb |= 1 << b; }
+      if (!ma) { ma = 1 << bits[0]; mb &= ~ma; } if (!mb) { mb = 1 << bits[bits.length - 1]; ma &= ~mb; }
+      const half = Object.assign({}, x, { cells: x.cells - 1, active: Math.max(0, x.active - 1) });
+      c.cortices.splice(i, 1, Object.assign({}, half, { mask: ma }), Object.assign({}, half, { mask: mb, wiring: (rng.random() * 4294967296) >>> 0 }));
+    }
+  }
   c.hue = (((g.hue + (rng.random() - 0.5) * 0.02) % 1) + 1) % 1;
   return c;
 }
