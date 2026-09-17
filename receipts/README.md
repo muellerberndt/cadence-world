@@ -11,3 +11,4 @@ rule sets; `SUMMARY.txt` is `sim/summarize.py` over the folder.
 - `sweep3-2026-09-17/`: the slow-digestion rule alone and in four combinations.
 - `sweep4-2026-09-17/`: six biting-centred worlds with the cost-neutral split mutation.
 - `sweep5-2026-09-18/`: six biting worlds with the read price at a quarter (0.0001 per unit) and at zero.
+- `sweep5b-2026-09-18/`: the page world, ripening + rock + biting + carrying at the quarter read price.
