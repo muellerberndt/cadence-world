@@ -1,0 +1,6 @@
+cheapread_bite {"bite":true} {"read":0.0001}
+cheapread_rock_bite {"rock":true,"bite":true} {"read":0.0001}
+cheapread_ripen_rock_bite {"ripen":true,"rock":true,"bite":true} {"read":0.0001}
+cheapread_night_bite {"night":true,"bite":true} {"read":0.0001}
+cheapread_rock_bite_carry {"rock":true,"bite":true,"carry":true} {"read":0.0001}
+freeread_rock_bite {"rock":true,"bite":true} {"read":0.0}

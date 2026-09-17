@@ -440,3 +440,41 @@ and at zero to see where seeing survives.
 
 **The horizon splits by niche.** Horizon 0 holds 25 to 75 per cent of biters, since a bite's
 payoff is beside the creature; grazers keep horizon 1.
+
+## 15. Sweep 5: the price of seeing, and the world where the halves appear (2026-09-18)
+
+Six biting worlds, two seeds, 6,000 ticks, the read price at 0.0001 per unit (a quarter of the
+page's) and, for `rock_bite`, at zero (`receipts/sweep5-2026-09-18/`).
+
+**Seeing survives once it is cheaper.** The food group is read by 1.0 to 1.4 cortices per
+creature in `rock_bite`, `ripen_rock_bite` and `rock_bite_carry` (0.02 to 0.29 at the old
+price), and in `rock_bite` the kin group by 1.1 to 2.0, the rock group by 1.2 to 1.5.
+
+**Brains grow, and grow into parts with different functions.** The mean cortex count is 2.1
+to 3.1 (`rock_bite` seed 1: 167 three-cortex and 126 four-cortex brains of 361, 441 cells on
+average, brains up to 1,536 cells), against 1.7 to 1.9 at the old price and 1.0 to 1.3 without
+the split. Lifetime at death is flat across one to four cortices (39, 35, 35, 33 in `rock_bite`;
+43, 38, 40, 39 in `rock_bite_carry`) and across 64 to 1,536 cells, so the large specialised brain
+lives as long as the small one, and the population settles at a mix, an equilibrium of sizes
+rather than a race to one.
+
+**Two interacting halves appear, and where reading is free they live longer.** Brains with at
+least two cortices where one reads the others' previous codes are 8 to 13 per cent of the
+population at the quarter price (`rock_bite`, `ripen_rock_bite`, `rock_bite_carry`, `night_bite`)
+and 15 to 28 per cent with reading free. Their lifetime at death against the plain brains: 37
+against 33 in `freeread_rock_bite` seed 1, 46 against 40 in `rock_bite_carry` seed 1, 38 against
+35 in `night_bite` seed 1, level in the other seeds. At the old price they were 1 to 6 per cent
+and lived shorter. So the inner channel is selected once the reading it adds is affordable, and
+the world that selects it is rock with biting, with or without carrying and ripening.
+
+**Hearing pays, speech still means nothing.** Creatures that hear earn more per tick than the
+deaf in every cheap-reading world (0.50 against 0.44, 0.54 against 0.45, 0.46 against 0.40,
+0.42 against 0.38), the heard group is read by 0.6 to 2.1 cortices per creature, and 15 to 43 per
+cent speak, but the mutual information between the symbol and what is under or beside the
+speaker stays at 0.001 to 0.004 bits. A listener gains from noticing that someone is there and
+speaking, which the heard group carries; what is said carries nothing yet.
+
+**The page's world.** Rock, biting and carrying at the quarter read price, with ripening if the
+four-rule world holds a population (its run is in `receipts/sweep5b-2026-09-18/`). The read
+price stays a price: reading free is the control that shows the ceiling, and the page keeps a
+physical world.
