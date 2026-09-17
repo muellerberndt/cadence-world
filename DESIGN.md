@@ -1,6 +1,6 @@
 # cadence-world: shared observers constructing a world
 
-Date: 2026-09-17. Status: design, nothing built. Prompted by a Telegram reader's request for a
+Date: 2026-09-17. Status: W0 built in Python with tests; the page runs W0 to W3 in one file (evolving records brains, symbols, the three views, the live brain scan); section 10 holds the first measurement. Prompted by a Telegram reader's request for a
 Conway-like, visual, aesthetic simulation of how shared observers construct reality, and by the
 cadence-adaptation programme's result that wiring is evolved across generations while records are
 learned within a life (`cadence-adaptation/fable/2026-09-17-evolved-development.md`).
