@@ -1,5 +1,7 @@
 # cadence-world
 
+[Website](https://floatingpragma.io/cadence/) · [Library](https://github.com/muellerberndt/cadence) · [Paper](https://philpapers.org/rec/MUECAP-2)
+
 A conserved-mass world under a moving sun, observed by creatures whose brains are inherited as
 wiring and learned as records within one life. The page draws the world from what the living
 observers have seen.
