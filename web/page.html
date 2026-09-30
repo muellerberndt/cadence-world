@@ -132,6 +132,7 @@
 
     <dl class="counters">
       <dt>tick</dt><dd id="c-tick">0</dd>
+      <dt>ticks per second, achieved</dt><dd id="c-rate">0</dd>
       <dt>alive</dt><dd id="c-alive">0</dd>
       <dt>born / died</dt><dd id="c-births">0 / 0</dd>
       <dt>mass: soil + food + held</dt><dd id="c-mass">0</dd>
@@ -153,7 +154,7 @@
     <div class="controls">
       <div class="row">
         <button class="act" id="pause">Pause</button>
-        <label>ticks per second <input type="range" id="speed" min="0" max="7" value="6"> <span id="speed-v">30</span></label>
+        <label>ticks per second <input type="range" id="speed" min="0" max="7" value="5"> <span id="speed-v">15</span></label>
       </div>
       <div class="row">
         <button class="act" id="rain">Rain food</button>
@@ -248,7 +249,7 @@ function resize() { const r = glCanvas.parentElement.getBoundingClientRect(); re
 addEventListener('resize', resize);
 
 // ---------- the clock: simulation ticks at a chosen rate, frames in between ----------
-let sub, pop, seed = 0, view = 'is', paused = false, rate = 30, acc = 0, lastNow = performance.now(), chosen = null, mass0 = 0, frame = 0;
+let sub, pop, seed = 0, view = 'is', paused = false, rate = 15, acc = 0, lastNow = performance.now(), chosen = null, mass0 = 0, frame = 0;
 const anims = []; // {kind, t0, ...} from the population's events; age = simTime - t0
 let leader = null, autoBrain = true;
 const ticker = []; let eatSeen = 0;
@@ -283,9 +284,18 @@ function say(e) {
   if (!line) return;
   ticker.push(`<div class="${cls}">${sub.tick} ${line}</div>`); if (ticker.length > 12) ticker.shift();
 }
+// Settlement brains cost real compute, so the clock yields: each frame runs only the ticks that
+// fit its budget, the shortfall is dropped rather than owed, and the achieved rate is shown.
+let ticksDone = 0, rateShown = 0, rateT0 = performance.now();
 function loop() {
   const now = performance.now(), dt = Math.min((now - lastNow) / 1000, 0.25); lastNow = now;
-  if (!paused && rate > 0) { acc += dt * rate; let n = 0; while (acc >= 1 && n < 12) { tick(); acc -= 1; n++; } if (acc >= 1) acc = 0.999; }
+  if (!paused && rate > 0) {
+    acc += dt * rate;
+    const deadline = now + 26; let n = 0;
+    while (acc >= 1 && n < 12 && performance.now() < deadline) { tick(); acc -= 1; n++; ticksDone++; }
+    if (acc >= 1) acc = 0.999;
+  }
+  if (now - rateT0 > 1000) { rateShown = ticksDone * 1000 / (now - rateT0); ticksDone = 0; rateT0 = now; }
   drawWorld(); drawBrain();
   if (frame++ % 8 === 0) { counters(); lineagePanel(); drawComplexity(); document.getElementById('ticker').innerHTML = ticker.slice().reverse().join(''); }
   requestAnimationFrame(loop);
@@ -470,7 +480,7 @@ function stats() {
 function counters() {
   const m = pop.mass; let seen = 0; for (let i = 0; i < N; i++) if (pop.count[i] > 0) seen++;
   const st = stats(); const set = (id, v) => { document.getElementById(id).textContent = v; };
-  set('c-tick', sub.tick); set('c-alive', pop.creatures.length); set('c-births', `${pop.births} / ${pop.deaths}`); set('c-mass', m);
+  set('c-tick', sub.tick); set('c-rate', `${rateShown.toFixed(0)} of ${rate}`); set('c-alive', pop.creatures.length); set('c-births', `${pop.births} / ${pop.deaths}`); set('c-mass', m);
   const ok = document.getElementById('c-ok'); ok.textContent = m === mass0 ? 'yes' : 'NO'; ok.className = m === mass0 ? 'ok' : 'bad';
   set('c-seen', `${(100 * seen / N).toFixed(0)}%`); set('c-sun', sub.contrast.toFixed(2)); set('c-niche', `${st.grazers} / ${st.hunters}`);
   set('c-cells', `${st.patches.toFixed(0)} / ${st.depth.toFixed(2)}`); set('c-read', `${st.horizon.toFixed(2)} / ${st.read.toFixed(0)}`); set('c-sym', `${(100 * st.speak).toFixed(0)}% / ${(100 * st.hears).toFixed(0)}%`); set('c-halves', `${(100 * st.settled).toFixed(0)}% / ${(100 * st.learned).toFixed(0)}%`);
