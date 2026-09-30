@@ -1,0 +1,637 @@
+{
+  "schema": "cadence-world-settling-v1",
+  "cadence_version": "0.48.0",
+  "distribution_metadata_version": "0.43.0",
+  "architecture": "flat",
+  "seed": 0,
+  "layout": {
+    "inputs": [
+      {
+        "name": "food",
+        "shape": [
+          9
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name": "action",
+        "reads": "motor",
+        "shape": [
+          6
+        ],
+        "sensor_coverage_by_coordinate": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    ],
+    "populations": [
+      {
+        "inputs": [
+          "food"
+        ],
+        "name": "motor",
+        "observes": [],
+        "patches": 6,
+        "role": "processing",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    ],
+    "config": {
+      "device": "python",
+      "dtype": "float64",
+      "seed": 0,
+      "settle_budget": 2048,
+      "fan_in": null,
+      "backtracks": 32,
+      "max_patches": 10000,
+      "max_connections": 1000000,
+      "max_inputs": 1000000,
+      "initial_scale": 0.3,
+      "tolerance": 1e-06,
+      "state_prior": 0.01,
+      "parameter_prior": 1.0,
+      "state_bound": 1.0,
+      "parameter_bound": 4.0,
+      "step": 1.0
+    },
+    "patches": 6,
+    "input_samples": 9,
+    "connections": 54,
+    "edges": [
+      [
+        "input",
+        7,
+        0
+      ],
+      [
+        "input",
+        5,
+        0
+      ],
+      [
+        "input",
+        1,
+        0
+      ],
+      [
+        "input",
+        3,
+        0
+      ],
+      [
+        "input",
+        4,
+        0
+      ],
+      [
+        "input",
+        2,
+        0
+      ],
+      [
+        "input",
+        0,
+        0
+      ],
+      [
+        "input",
+        8,
+        0
+      ],
+      [
+        "input",
+        6,
+        0
+      ],
+      [
+        "input",
+        7,
+        1
+      ],
+      [
+        "input",
+        5,
+        1
+      ],
+      [
+        "input",
+        1,
+        1
+      ],
+      [
+        "input",
+        3,
+        1
+      ],
+      [
+        "input",
+        4,
+        1
+      ],
+      [
+        "input",
+        2,
+        1
+      ],
+      [
+        "input",
+        0,
+        1
+      ],
+      [
+        "input",
+        8,
+        1
+      ],
+      [
+        "input",
+        6,
+        1
+      ],
+      [
+        "input",
+        7,
+        2
+      ],
+      [
+        "input",
+        5,
+        2
+      ],
+      [
+        "input",
+        1,
+        2
+      ],
+      [
+        "input",
+        3,
+        2
+      ],
+      [
+        "input",
+        4,
+        2
+      ],
+      [
+        "input",
+        2,
+        2
+      ],
+      [
+        "input",
+        0,
+        2
+      ],
+      [
+        "input",
+        8,
+        2
+      ],
+      [
+        "input",
+        6,
+        2
+      ],
+      [
+        "input",
+        7,
+        3
+      ],
+      [
+        "input",
+        5,
+        3
+      ],
+      [
+        "input",
+        1,
+        3
+      ],
+      [
+        "input",
+        3,
+        3
+      ],
+      [
+        "input",
+        4,
+        3
+      ],
+      [
+        "input",
+        2,
+        3
+      ],
+      [
+        "input",
+        0,
+        3
+      ],
+      [
+        "input",
+        8,
+        3
+      ],
+      [
+        "input",
+        6,
+        3
+      ],
+      [
+        "input",
+        7,
+        4
+      ],
+      [
+        "input",
+        5,
+        4
+      ],
+      [
+        "input",
+        1,
+        4
+      ],
+      [
+        "input",
+        3,
+        4
+      ],
+      [
+        "input",
+        4,
+        4
+      ],
+      [
+        "input",
+        2,
+        4
+      ],
+      [
+        "input",
+        0,
+        4
+      ],
+      [
+        "input",
+        8,
+        4
+      ],
+      [
+        "input",
+        6,
+        4
+      ],
+      [
+        "input",
+        7,
+        5
+      ],
+      [
+        "input",
+        5,
+        5
+      ],
+      [
+        "input",
+        1,
+        5
+      ],
+      [
+        "input",
+        3,
+        5
+      ],
+      [
+        "input",
+        4,
+        5
+      ],
+      [
+        "input",
+        2,
+        5
+      ],
+      [
+        "input",
+        0,
+        5
+      ],
+      [
+        "input",
+        8,
+        5
+      ],
+      [
+        "input",
+        6,
+        5
+      ]
+    ],
+    "observed_fields": [
+      "state",
+      "prediction_error"
+    ],
+    "sensor_coverage": 9,
+    "output_connected_patches": 6,
+    "fingerprint": "ac1f45c674209e3aeff3822248d8d1d57981894a10b77628c7033beca7e05822",
+    "implementation": {
+      "brain.py": "fafadb35f701a432d4c9636ce7515014dbd595e5df031311cd3ff1e1c1cea102",
+      "cortex.py": "270f963fa6ca1c91b0deb19ce0f440cd4881f79205fdd115f64ef23942463482",
+      "column.py": "d3752d27227ca34dfc03134d792cc046fc41d96ac181f19be852a193d1eee203",
+      "ports.py": "f0ec46ba314ee20523ff603473256362ae84a1522e89d39751f082f278aa4dca",
+      "_repair.py": "6c405d9369c215ccc043ede9b325286f2b3706d5e8044e9fa1dff6e8776f823a",
+      "_validation.py": "05d09fd56ec96ef9315cfe569fa818a718795d1aedefd12d5b02bb619808b0ab",
+      "_tensor.py": "51099dd71a80dc85678727372722ff1ca46fda1121545d1ceb7f68f2cf891647"
+    },
+    "admissions": 672,
+    "last_event_id": 671
+  },
+  "config": {
+    "width": 4,
+    "depth": 1,
+    "epochs": 20,
+    "samples": 96,
+    "ticks": 96,
+    "device": "python",
+    "parameter_prior": 1.0
+  },
+  "teacher": "explicit local sensory action-preference demonstrations; no live teacher",
+  "baseline": {
+    "examples": 48,
+    "qualified": 48,
+    "correct": 8,
+    "action_agreement": 0.16666666666666666,
+    "max_error": 1.0813283745791105,
+    "work": {
+      "evaluations": 188,
+      "edge_visits": 20304,
+      "patch_visits": 2256,
+      "proposals": 92,
+      "backtracks": 0
+    }
+  },
+  "bootstrap": {
+    "options": {
+      "max_error": 0.12,
+      "epochs": 20,
+      "seed": 0,
+      "budget": 2048
+    },
+    "passed": true,
+    "reason": "passed",
+    "epochs": 7,
+    "presentations": 672,
+    "accepted": 672,
+    "examples": 96,
+    "checks": 24,
+    "history": [
+      {
+        "epoch": 0,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 1.1519081336116115
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.9911824476945503
+        }
+      },
+      {
+        "epoch": 1,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.5654133527710679
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.5420276108338082
+        }
+      },
+      {
+        "epoch": 2,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.4491994691114757
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.6161568191402036
+        }
+      },
+      {
+        "epoch": 3,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.2430054841597778
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.28447329952601863
+        }
+      },
+      {
+        "epoch": 4,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.20156465215685607
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.23487613882878527
+        }
+      },
+      {
+        "epoch": 5,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.16077086960216522
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.16907493023901282
+        }
+      },
+      {
+        "epoch": 6,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.11335137444930735
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.1240502106690344
+        }
+      },
+      {
+        "epoch": 7,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.10198711692042528
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.07905836188535764
+        }
+      }
+    ],
+    "work": {
+      "evaluations": 9777,
+      "edge_visits": 1055916,
+      "patch_visits": 117324,
+      "proposals": 6513,
+      "backtracks": 557
+    },
+    "failure": null
+  },
+  "heldout": {
+    "examples": 48,
+    "qualified": 48,
+    "correct": 48,
+    "action_agreement": 1.0,
+    "max_error": 0.07905836188535764,
+    "work": {
+      "evaluations": 192,
+      "edge_visits": 20736,
+      "patch_visits": 2304,
+      "proposals": 96,
+      "backtracks": 0
+    }
+  },
+  "checkpoint": "{\"admissions\":672,\"biases\":[-9.879867779678254e-05,0.0006238797855574552,0.00029313888657404185,0.0036969102201422437,-0.19104478245954085,-0.4236886290095075],\"config\":{\"backtracks\":32,\"device\":\"python\",\"dtype\":\"float64\",\"fan_in\":null,\"initial_scale\":0.3,\"max_connections\":1000000,\"max_inputs\":1000000,\"max_patches\":10000,\"parameter_bound\":4.0,\"parameter_prior\":1.0,\"seed\":0,\"settle_budget\":2048,\"state_bound\":1.0,\"state_prior\":0.01,\"step\":1.0,\"tolerance\":1e-06},\"event_digest\":\"695f11e96a0ad378094c1b3ae792bfe470dda7f99246fc71a9644fe50fdcbb91\",\"event_id\":671,\"fingerprint\":\"ac1f45c674209e3aeff3822248d8d1d57981894a10b77628c7033beca7e05822\",\"implementation\":{\"_repair.py\":\"6c405d9369c215ccc043ede9b325286f2b3706d5e8044e9fa1dff6e8776f823a\",\"_tensor.py\":\"51099dd71a80dc85678727372722ff1ca46fda1121545d1ceb7f68f2cf891647\",\"_validation.py\":\"05d09fd56ec96ef9315cfe569fa818a718795d1aedefd12d5b02bb619808b0ab\",\"brain.py\":\"fafadb35f701a432d4c9636ce7515014dbd595e5df031311cd3ff1e1c1cea102\",\"column.py\":\"d3752d27227ca34dfc03134d792cc046fc41d96ac181f19be852a193d1eee203\",\"cortex.py\":\"270f963fa6ca1c91b0deb19ce0f440cd4881f79205fdd115f64ef23942463482\",\"ports.py\":\"f0ec46ba314ee20523ff603473256362ae84a1522e89d39751f082f278aa4dca\"},\"layout\":{\"inputs\":[{\"name\":\"food\",\"shape\":[9]}],\"outputs\":[{\"indices\":[0,1,2,3,4,5],\"name\":\"action\",\"reads\":\"motor\",\"shape\":[6]}],\"populations\":[{\"inputs\":[\"food\"],\"name\":\"motor\",\"observes\":[],\"patches\":6}]},\"schema\":\"population-brain/1\",\"state\":[0.4218990052500079,0.0,0.0,0.5370495669980353,-0.197375320224904,-0.4],\"weights\":[0.002989857126742734,0.011470444655397262,1.1875527064619407,0.007461132897818803,-0.9747019165917412,1.1659376599432136,1.1823732139554757,-0.014089221445437627,-0.001795788513155787,0.04154062782108115,1.171629163260331,0.011987340115610867,0.009362422788087224,-0.921139080355492,1.1580574024374517,0.002328828149019872,1.1226465380663209,-0.013571433100112206,1.1743667752830982,0.007765628803099534,-0.0032054847423406956,0.0006439001429534554,-0.9165935919744094,0.00532645780256338,0.009396381130697984,1.1317433009653608,1.148933621531766,0.018061336115265374,4.7922975792125094e-05,0.0046284643151260855,1.1781294928569443,-0.943257128798563,-0.00247222123701043,1.1748216334933697,-0.04224625630057792,1.1561427702290292,-0.06475494974146605,-0.019578375927381483,0.020336863684190545,-0.03822091494717736,3.4845900812004036,0.0009838639174120924,-0.0037699220706766115,0.07184695930133347,-0.001782457735858724,-0.00031786257581660704,0.0003207092530916363,-0.0003766409479385492,0.0002707671361429484,-0.0009147436547459114,-0.00031349669248180624,-0.0002840155197227161,0.0007481933967864153,0.0007452498073109823]}",
+  "checkpoint_sha256": "f4e014d0d14f7f25a60e5f359bb417c0bb000a05b8998cb731014fa6c2800cad",
+  "checkpoint_roundtrip": true,
+  "live": {
+    "seed": 400,
+    "ticks_requested": 96,
+    "ticks_completed": 96,
+    "alive": 1,
+    "body_mass": 67,
+    "initial_total_mass": 880,
+    "final_total_mass": 880,
+    "outcomes": {
+      "ate": 55,
+      "moved": 41
+    },
+    "solves": 96,
+    "refused": 0,
+    "work": {
+      "evaluations": 384,
+      "edge_visits": 41472,
+      "patch_visits": 4608,
+      "proposals": 192,
+      "backtracks": 0
+    },
+    "seconds": 0.03461187501670793,
+    "frames": []
+  },
+  "controls": {
+    "random": {
+      "seed": 400,
+      "ticks_requested": 96,
+      "ticks_completed": 96,
+      "alive": 1,
+      "body_mass": 22,
+      "initial_total_mass": 880,
+      "final_total_mass": 880,
+      "outcomes": {
+        "ate": 13,
+        "moved": 67,
+        "none": 16
+      },
+      "solves": 0,
+      "refused": 0,
+      "work": {},
+      "seconds": 0.02480783296050504,
+      "frames": []
+    },
+    "reflex": {
+      "seed": 400,
+      "ticks_requested": 96,
+      "ticks_completed": 96,
+      "alive": 1,
+      "body_mass": 85,
+      "initial_total_mass": 880,
+      "final_total_mass": 880,
+      "outcomes": {
+        "ate": 74,
+        "moved": 22
+      },
+      "solves": 0,
+      "refused": 0,
+      "work": {},
+      "seconds": 0.024925375008024275,
+      "frames": []
+    }
+  },
+  "untrained_live": {
+    "seed": 400,
+    "ticks_requested": 96,
+    "ticks_completed": 96,
+    "alive": 1,
+    "body_mass": 12,
+    "initial_total_mass": 880,
+    "final_total_mass": 880,
+    "outcomes": {
+      "moved": 2,
+      "none": 94
+    },
+    "solves": 96,
+    "refused": 0,
+    "work": {
+      "evaluations": 260,
+      "edge_visits": 28080,
+      "patch_visits": 3120,
+      "proposals": 68,
+      "backtracks": 0
+    },
+    "seconds": 0.03270275000249967,
+    "frames": []
+  },
+  "seconds": 1.5011433330364525,
+  "source_sha256": {
+    "world/__init__.py": "97dd1486fe80c155f5b156e328308df64cdfa1d9e288321da37b43a406467de3",
+    "world/population.py": "3b5fc3b557592edffdc15cd2fc074535c97bceb8a2aff0828f6decfa16955361",
+    "world/random.py": "316ac5d448615a03b7327e394b1bd65b70082ce3f6b47466ed5d4ef9a12de5fc",
+    "world/settling.py": "6f28ad0379419715003b5d053101f563b2b2cc6c0fbde6adfea5cd451f9ccfc2",
+    "world/substrate.py": "fc7514499f6ea2a9d9cc0c3ba785d101532af23c369c2d947cccee705a7227d4"
+  }
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadence World · Settling forager</title>
+<style>
+:root{color-scheme:dark;font:15px ui-monospace,SFMono-Regular,monospace;color:#d0eee0;background:#091510}*{box-sizing:border-box}body{max-width:1160px;margin:auto;padding:30px}h1{font-size:32px;letter-spacing:-1px;margin-bottom:8px}p{color:#a0b7aa;line-height:1.6}header{margin-bottom:24px}.eyebrow{color:#65f2a4;text-transform:uppercase;letter-spacing:3px;font-size:12px}main{display:grid;grid-template-columns:2fr 1fr;gap:20px}canvas{width:100%;aspect-ratio:1;border-radius:18px;background:#0c2118;border:1px solid #264939}aside{padding:24px;background:#10271d;border:1px solid #264939;border-radius:18px}h2{font-size:17px;margin-top:0}.value{font-size:26px;color:#76ffb0}.row{display:flex;justify-content:space-between;border-bottom:1px solid #244737;padding:12px 0}.brain{display:flex;flex-wrap:wrap;gap:6px;margin:15px 0}.patch{width:28px;height:28px;border-radius:5px;border:1px solid #67c99b}button,input::file-selector-button{padding:10px 16px;border:1px solid #447e5e;border-radius:8px;background:#1b3f2c;color:#c6ffdc;font:inherit;cursor:pointer}footer{display:flex;align-items:center;gap:16px;margin:20px 0;flex-wrap:wrap}input[type=range]{flex:1;min-width:150px;accent-color:#68f2a5}small{color:#8cac9b;line-height:1.6}.error{color:#ffa899}@media(max-width:720px){main{grid-template-columns:1fr}body{padding:18px}}
+</style>
+<header><span class="eyebrow">Cadence / world</span><h1>A small brain, a living world.</h1><p>A recorded, teacher-free life driven by qualified recursive settlement. Green cells contain food; the amber creature chooses where to move and when to eat.</p></header>
+<main><canvas id="world" width="720" height="720" aria-label="Recorded forager positions and food cells"></canvas><aside>
+<h2>One joint equilibrium</h2><div class="row"><span>Body action</span><strong id="action">Loading</strong></div><div class="row"><span>Tick</span><span id="tick">—</span></div><div class="row"><span>Body mass</span><span class="value" id="energy">—</span></div><div class="row"><span>Stationarity</span><span id="stationarity">—</span></div><div class="row"><span>Repair sweeps</span><span id="sweeps">—</span></div>
+<p>Settled patch activity</p><div class="brain" id="brain"></div><small>Each square shows an actual final patch state for this tick. This replay does not animate or invent intermediate repairs.</small><p id="summary"></p><small id="status">Loading the included run…</small>
+</aside></main>
+<footer><button id="play">Pause</button><input id="timeline" aria-label="Replay time" type="range" min="0" max="0" value="0"><label>Load your run <input id="file" type="file" accept="application/json"></label></footer>
+<small>Run <code>python -m world.settling --trace</code>, then load its JSON here. This page displays a Python run; the browser does not execute the Cadence solver. <a href="../README.md">Interface and evidence</a>.</small>
+<script>
+const byId=id=>document.getElementById(id), canvas=byId('world'), ctx=canvas.getContext('2d');
+let receipt,frames=[],index=0,playing=true;
+function draw(){
+ if(!frames.length)return;const f=frames[index],h=f.food.length,w=f.food[0].length,s=canvas.width/w;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const n=f.food[y][x];ctx.fillStyle=`hsl(145 55% ${9+n*4}%)`;ctx.fillRect(x*s+2,y*s+2,s-4,s-4);if(n){ctx.fillStyle='#b9e9c6';ctx.font=`${s*.22}px monospace`;ctx.fillText(n,x*s+s*.16,y*s+s*.31)}}
+ for(const c of f.creatures){ctx.beginPath();ctx.arc((c.x+.5)*s,(c.y+.5)*s,s*.29,0,Math.PI*2);ctx.fillStyle='#ffd278';ctx.fill();ctx.fillStyle='#332916';ctx.beginPath();ctx.arc((c.x+.42)*s,(c.y+.44)*s,s*.04,0,Math.PI*2);ctx.arc((c.x+.59)*s,(c.y+.44)*s,s*.04,0,Math.PI*2);ctx.fill()}
+ const c=f.creatures[0];byId('action').textContent=c?.action??'life ended';byId('tick').textContent=f.tick;byId('energy').textContent=c?.energy??0;byId('stationarity').textContent=f.stationarity?.toExponential(2)??'—';byId('sweeps').textContent=f.sweeps??'—';
+ byId('brain').replaceChildren(...f.state.map((v,i)=>{const e=document.createElement('div');e.className='patch';e.style.background=`hsl(${v<0?195:145} 65% ${15+Math.abs(v)*60}%)`;e.title=`Patch ${i}: ${v.toFixed(4)}`;return e}));byId('timeline').value=index;
+}
+function load(data){if(data.schema!=='cadence-world-settling-v1'||!data.live?.frames?.length)throw Error('Choose a Cadence World receipt produced with --trace.');receipt=data;frames=data.live.frames;index=0;byId('timeline').max=frames.length-1;byId('summary').textContent=`${data.architecture} · ${data.layout.patches} patches · ${data.live.outcomes.ate??0} meals · ${data.live.refused} refused solves`;byId('status').textContent=`Cadence ${data.cadence_version} · recorded live phase · bootstrap ${data.bootstrap.passed?'passed':'did not reach readiness threshold'}`;draw()}
+byId('play').onclick=()=>{playing=!playing;byId('play').textContent=playing?'Pause':'Play'};byId('timeline').oninput=e=>{index=Number(e.target.value);draw()};byId('file').onchange=async e=>{try{load(JSON.parse(await e.target.files[0].text()))}catch(err){byId('status').textContent=err.message}};
+setInterval(()=>{if(playing&&frames.length){index=(index+1)%frames.length;draw()}},200);
+fetch('../receipts/settling-0.48/recursive-seed0.json').then(r=>{if(!r.ok)throw Error('Load a run JSON above, or serve this repository with python -m http.server.');return r.json()}).then(load).catch(e=>{byId('status').textContent=e.message;byId('status').className='error'});
+</script>
+</html>

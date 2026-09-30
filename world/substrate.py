@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from cadence.records import Mulberry32
+from .random import Mulberry32
 
 
 @dataclass(frozen=True)

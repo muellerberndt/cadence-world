@@ -2,69 +2,128 @@
 
 [Website](https://floatingpragma.io/cadence/) · [Library](https://github.com/muellerberndt/cadence) · [Paper](https://philpapers.org/rec/MUECAP-2)
 
-A conserved-mass world under a moving sun, observed by creatures whose brains are inherited as
-wiring and learned as records within one life. The page draws the world from what the living
-observers have seen.
+A conserved-mass world under a moving sun, now with dens, predators and
+beings that carry **Cadence 0.50** brains. Every being owns a deep
+recursive-settlement brain with six jointly settled action values, an
+explicit bounded sensory history, a reward learner with replay, a foresight
+predictor and a curiosity heuristic. Two Python lanes produce receipts:
+**survival** (fixed bodies, matched controls) and **evolution** (mutating
+senses and depth competing in one world). The earlier supervised **settling**
+forager remains available. The browser ecosystem lives in
+[cadence-demos](https://github.com/muellerberndt/cadence-demos) as Patch
+World.
 
-The rules are physics: one quantity, mass, in integer units, conserved at every tick; one external
-drive, a band of sunlight crossing a torus; every rule local; every computation paid in mass. What
-is on the observer's side of the boundary is open: the genome carries the window radius, the number
-of expansion cells, how many fire, the fan-in, the learning rate, the horizon, the exploration, the
-number of symbols the creature can utter and whether it hears, and a split mutates it. The brain is
-a records cortex in the sense of the [cadence](https://github.com/muellerberndt/cadence) library:
-a fixed sparse expansion of the reading, winner-take-all, one record per active cell and action,
-one write per witnessed outcome into exactly the cells the reading touched, no replay, no global
-objective. Energy and death select.
-
-`DESIGN.md` states the idea, the rules, why signalling and memory can arise, the picture, the
-stages and their gates, and what is not promised.
-
-## The simulation core
-
-`sim/core.js` holds the whole simulation with no DOM: the substrate, the rules as flags, the
-genome (a list of cortices, each a mask over the reading's field groups with its own cells and
-records; the window radius, the horizon, the symbols, the split threshold, the learning genes),
-the brain and the population. `sim/probe.js` runs one world headless in node and prints the
-population statistics, the lifetime-at-death tables by brain size, cortex count and horizon, the
-mask census and the symbol statistics; `sim/summarize.py` tabulates a folder of such runs.
+## Run the survival lane
 
 ```bash
-node sim/probe.js '{"ripen":true,"rock":true,"bite":true}' 8000 1 > runs/rrb_s1.jsonl
-python3 sim/summarize.py runs
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m world.survival --trace
+.venv/bin/python -m world.evolution --trace
+.venv/bin/python -m pytest tests -q
+python3 -m http.server 8080
 ```
 
-## The page
+Open [the survival replay](http://localhost:8080/web/survival.html) and load
+`runs/survival.json` or `runs/evolution.json`. The page replays the Python
+run's recorded frames: food, dens, predators, each being's sensed window and
+per-being outcomes. It executes no solver and invents no frames.
 
-`web/index.html` is built by `python3 web/build.py` from `web/page.html` with `sim/core.js` inlined, so the page and the probe run the same code. It is the whole simulation in one file: the substrate, the population, the brains,
-a three.js view with an orbiting camera, the three views (what is, what is known, what one
-believes), a live brain scan of the selected creature, the lineages, and the population's brain
-size and speech over time. Open it in a browser; it loads three.js and two typefaces from a CDN
-and nothing else.
+## The world
 
-The rules of the next world are checkboxes. Keys: `1` `2` `3` switch the view, space pauses. Drag to orbit, wheel to zoom, shift-drag to pan,
-click a creature to open its brain, "Follow it" to keep the camera on it.
+One quantity, mass, in integer units, conserved at every tick. A band of
+sunlight crosses the torus and grows food where it passes; food decays and
+soil diffuses. Fixed den cells exclude predators. Predators move on even
+ticks, patrol until a being comes within sense range, then chase; adjacency
+drains one energy unit per tick into the soil under the being. Eating moves a
+unit of food into the body; metabolism prices existence, movement, every
+sensed window cell and every brain patch, so wider senses and bigger brains
+are a metabolic trade rather than a free win. Death ends the body; splits are
+disabled so one brain owns one continuing life.
+
+## The being
+
+Senses: local food, threat and den channels in a window of genome-controlled
+radius, own light, own energy, the last executed action, and a `History`
+window over a twelve-value summary row. Motion — the predator's heading, the
+light band's drift — exists only in how consecutive summary rows differ, so
+temporal tactics require the supplied context. Inputs are standardized by
+per-coordinate norms fitted on bootstrap rows only and saved beside every
+checkpoint.
+
+Brain: a perception population plus recursive observer stages, each reading
+raw senses and observing every earlier population's states and prediction
+errors; the final stage exposes six scalar action values and a two-value
+foresight output in one joint settlement. `composed` keeps identical sizes
+with ordinary state connections and `flat` is a direct-sensor control; both
+exist for matched comparisons, and no depth advantage is claimed.
+
+Life: a disclosed scripted teacher with the same sensory window supplies
+bootstrap demonstrations (danger first, then the meal, then the approach,
+then a committed search), rebalanced so rare actions keep their weight and
+admitted through a small-batch warmup ramp. The live phase is the library's
+`Reinforcement` helper: epsilon exploration, one-step value targets, bounded
+replay of stored transitions. Reward is the being's own measured energy
+change plus a bounded curiosity bonus from the foresight predictor's error
+reduction. Refused solves wait explicitly and are counted; there is no hidden
+reflex fallback and no route script.
+
+Receipts compare the same frozen evaluation worlds before learning, after
+learning, and under random, threat-blind reflex, scripted-teacher and
+untrained-brain controls, then measure tactics directly: threat response,
+den use under threat against den use when safe, and light-band tracking.
+Differences on those matched worlds are the lane's only behavioral evidence.
+
+## The evolution lane
+
+`world.evolution` runs lineage competition. A genome sets window radius,
+perception width, recursive depth, history steps, parameter prior, discount,
+exploration and curiosity weight. Fresh genomes bootstrap from a cached
+teacher corpus for their radius and history window, then every lineage lives
+in one shared world and competes for the same conserved food under the same
+predators. The fitter half persists with its trained brain and replay memory;
+the other half's lineages end and mutated offspring are raised fresh. Weights
+never copy across layouts: offspring inherit a body plan, not a parent's
+memory. This lane is a competition demonstration with receipts, not a
+controlled architecture comparison; matched claims stay in the survival lane.
+
+`world.sweep` runs the survival lane across observation wiring, parameter
+prior and history-window axes with one process per configuration and a
+summary row per job.
+
+## The settling lane
+
+`world.settling` is the earlier supervised forager: a bootstrap teacher, six
+settled motor preferences, live rollouts with untrained/random/reflex
+controls, and [the settling replay](http://localhost:8080/web/settling.html).
+It demonstrates supervised local foraging and recursive coupling; it does not
+establish autonomous discovery or an advantage from additional depth. See
+[the measured comparison](receipts/settling-0.48/README.md).
+
+Optional `--device cpu`, `mps` or `cuda` on any lane uses Cadence's tensor
+engine after installing `cadence-net[gpu]`. A GPU is not automatically faster
+for these small brains.
 
 ## The Python world
 
-`world/` holds the same substrate and the stage W0 population (reflex and random walkers, no
-learning) with the known view built from the creatures' records, and `tests/` its obligations:
-the light is a drifting band, mass is conserved through growth, decay, diffusion, eating,
-metabolism, splits and deaths, a seed replays exactly, reflex walkers outlive random ones, the
-known view is built from records only. The random numbers are one Mulberry32 stream in the same
-draw order as the page, so the page can be checked against it cell by cell (a parity harness is
-the next step; the learning brain of the page is not yet ported to Python).
-
-```bash
-python -m venv .venv && .venv/bin/pip install cadence-net numpy pytest
-.venv/bin/python -m pytest tests -q
-```
+`world/substrate.py` holds the light-driven soil and food physics;
+`world/hazards.py` the dens and predators; `world/senses.py` the window,
+summary and history encodings; `world/brains.py` the layouts;
+`world/teacher.py` the scripted curriculum; `world/beings.py` the beings and
+the shared tick; `world/survival.py`, `world/evolution.py` and
+`world/sweep.py` the lanes; `world/population.py` the earlier stage-W0
+controls. The tests check mass conservation through predators, dens and
+deaths, den exclusion, teacher priorities, history and norms custody,
+alignment evaluation purity, live-phase transition custody, learner
+snapshot resume, frozen-parameter evaluation, refusal handling without
+hidden fallbacks, genome bounds, and the settling lane's earlier
+obligations.
 
 ## Forking
 
-Everything is here. The rules live in one place in each implementation (`world/substrate.py`,
-`world/population.py`; the `Substrate`, `Brain`, `Population` classes at the top of the page's
-script). The genome table `GENE` at the top of the page is where the observer's degrees of freedom
-are declared; the price of each is in `POP`.
+Everything is here. The physics live in `world/substrate.py` and
+`world/hazards.py`; the prices in `world/beings.py`; the genome bounds at the
+top of `world/evolution.py`.
 
 ## License
 

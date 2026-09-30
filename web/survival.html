@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadence World · Survival</title>
+<style>
+:root{color-scheme:dark;font:15px ui-monospace,SFMono-Regular,monospace;color:#d0eee0;background:#091510}*{box-sizing:border-box}body{max-width:1160px;margin:auto;padding:30px}h1{font-size:32px;letter-spacing:-1px;margin-bottom:8px}p{color:#a0b7aa;line-height:1.6}header{margin-bottom:24px}.eyebrow{color:#65f2a4;text-transform:uppercase;letter-spacing:3px;font-size:12px}main{display:grid;grid-template-columns:2fr 1fr;gap:20px}canvas{width:100%;aspect-ratio:1;border-radius:18px;background:#0c2118;border:1px solid #264939}aside{padding:24px;background:#10271d;border:1px solid #264939;border-radius:18px}h2{font-size:17px;margin-top:0}.row{display:flex;justify-content:space-between;border-bottom:1px solid #244737;padding:9px 0;font-size:14px}.dead{opacity:.45}button,input::file-selector-button{padding:10px 16px;border:1px solid #447e5e;border-radius:8px;background:#1b3f2c;color:#c6ffdc;font:inherit;cursor:pointer}footer{display:flex;align-items:center;gap:16px;margin:20px 0;flex-wrap:wrap}input[type=range]{flex:1;min-width:150px;accent-color:#68f2a5}small{color:#8cac9b;line-height:1.6}.error{color:#ffa899}@media(max-width:720px){main{grid-template-columns:1fr}body{padding:18px}}
+</style>
+<header><span class="eyebrow">Cadence / world</span><h1>Beings under threat.</h1><p>A recorded frozen evaluation or evolution generation. Green cells hold food, blue squares are dens, red bodies are predators; each amber circle is one being with its own continuing brain, its sensed window drawn faintly around it.</p></header>
+<main><canvas id="world" width="768" height="768" aria-label="Recorded beings, predators, dens and food"></canvas><aside>
+<h2>The cast</h2><div id="cast"></div><div class="row"><span>Tick</span><span id="tick">—</span></div><p id="summary"></p><small id="status">Loading the included run…</small>
+</aside></main>
+<footer><button id="play">Pause</button><input id="timeline" aria-label="Replay time" type="range" min="0" max="0" value="0"><label>Load your run <input id="file" type="file" accept="application/json"></label></footer>
+<small>Run <code>python -m world.survival --trace</code> or <code>python -m world.evolution --trace</code>, then load the JSON here. This page replays a Python run; the browser executes no solver and invents no frames. <a href="../README.md">Interface and evidence</a>.</small>
+<script>
+const byId=id=>document.getElementById(id), canvas=byId('world'), ctx=canvas.getContext('2d');
+let frames=[],dens=null,index=0,playing=true;
+function draw(){
+ if(!frames.length)return;const f=frames[index],h=f.food.length,w=f.food[0].length,s=canvas.width/w;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const n=f.food[y][x];ctx.fillStyle=`hsl(145 55% ${8+n*4}%)`;ctx.fillRect(x*s+1,y*s+1,s-2,s-2)}
+ if(dens)for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(dens[y][x]){ctx.fillStyle='#2b5f8a';ctx.fillRect(x*s+1,y*s+1,s-2,s-2)}
+ for(const b of f.beings){if(!b.alive)continue;const r=b.radius??2;ctx.strokeStyle='rgba(255,210,120,.18)';ctx.strokeRect((b.x-r)*s,(b.y-r)*s,(2*r+1)*s,(2*r+1)*s)}
+ for(const p of f.predators){ctx.fillStyle='#e2523f';ctx.fillRect(p.x*s+s*.15,p.y*s+s*.15,s*.7,s*.7)}
+ for(const b of f.beings){if(!b.alive)continue;ctx.beginPath();ctx.arc((b.x+.5)*s,(b.y+.5)*s,s*.32,0,Math.PI*2);ctx.fillStyle='#ffd278';ctx.fill();ctx.fillStyle='#332916';ctx.font=`${s*.4}px monospace`;ctx.fillText(b.id,(b.x+.32)*s,(b.y+.66)*s)}
+ byId('tick').textContent=f.tick;byId('timeline').value=index;
+ byId('cast').replaceChildren(...f.beings.map(b=>{const e=document.createElement('div');e.className='row'+(b.alive?'':' dead');e.innerHTML=`<span>#${b.id} ${b.kind} r${b.radius??2}</span><span>${b.alive?b.action+' · '+b.energy:'died'}</span>`;return e}));
+}
+function load(data){
+ if(data.schema==='cadence-world-survival-v1'){frames=data.after_learning?.frames??[];dens=data.after_learning?.dens??null;byId('summary').textContent=`survival lane · ${data.config.architecture} ${data.config.size} · before ${data.before_learning.mean_survival_ticks.toFixed(0)} / after ${data.after_learning.mean_survival_ticks.toFixed(0)} mean survival ticks`}
+ else if(data.schema==='cadence-world-evolution-v1'){frames=data.frames??[];dens=data.dens??null;const g=data.generations.at(-1);byId('summary').textContent=`evolution lane · generation ${g.generation} · best fitness ${data.best.fitness.toFixed(1)} · genome r${data.best.genome.radius} w${data.best.genome.width} d${data.best.genome.depth} h${data.best.genome.history_steps}`}
+ else throw Error('Choose a survival or evolution receipt produced with --trace.');
+ if(!frames.length)throw Error('This receipt holds no trace frames; rerun with --trace.');
+ index=0;byId('timeline').max=frames.length-1;byId('status').textContent=`Cadence ${data.cadence_version} · recorded run · no live solver in this page`;draw()}
+byId('play').onclick=()=>{playing=!playing;byId('play').textContent=playing?'Pause':'Play'};byId('timeline').oninput=e=>{index=Number(e.target.value);draw()};byId('file').onchange=async e=>{try{load(JSON.parse(await e.target.files[0].text()))}catch(err){byId('status').textContent=err.message;byId('status').className='error'}};
+setInterval(()=>{if(playing&&frames.length){index=(index+1)%frames.length;draw()}},200);
+fetch('../runs/survival.json').then(r=>{if(!r.ok)throw Error('Load a run JSON above, or serve this repository with python -m http.server.');return r.json()}).then(load).catch(e=>{byId('status').textContent=e.message;byId('status').className='error'});
+</script>
+</html>

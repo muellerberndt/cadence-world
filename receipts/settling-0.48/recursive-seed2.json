@@ -1,0 +1,1073 @@
+{
+  "schema": "cadence-world-settling-v1",
+  "cadence_version": "0.48.0",
+  "distribution_metadata_version": "0.43.0",
+  "architecture": "recursive",
+  "seed": 2,
+  "layout": {
+    "inputs": [
+      {
+        "name": "food",
+        "shape": [
+          9
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name": "action",
+        "reads": "observer_0",
+        "shape": [
+          6
+        ],
+        "sensor_coverage_by_coordinate": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    ],
+    "populations": [
+      {
+        "inputs": [
+          "food"
+        ],
+        "name": "perception",
+        "observes": [],
+        "patches": 4,
+        "role": "processing",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "inputs": [
+          "food"
+        ],
+        "name": "observer_0",
+        "observes": [
+          "perception"
+        ],
+        "patches": 6,
+        "role": "observer",
+        "indices": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    ],
+    "config": {
+      "device": "python",
+      "dtype": "float64",
+      "seed": 2,
+      "settle_budget": 2048,
+      "fan_in": null,
+      "backtracks": 32,
+      "max_patches": 10000,
+      "max_connections": 1000000,
+      "max_inputs": 1000000,
+      "initial_scale": 0.3,
+      "tolerance": 1e-06,
+      "state_prior": 0.01,
+      "parameter_prior": 1.0,
+      "state_bound": 1.0,
+      "parameter_bound": 4.0,
+      "step": 1.0
+    },
+    "patches": 10,
+    "input_samples": 9,
+    "connections": 138,
+    "edges": [
+      [
+        "input",
+        3,
+        0
+      ],
+      [
+        "input",
+        6,
+        0
+      ],
+      [
+        "input",
+        4,
+        0
+      ],
+      [
+        "input",
+        5,
+        0
+      ],
+      [
+        "input",
+        7,
+        0
+      ],
+      [
+        "input",
+        2,
+        0
+      ],
+      [
+        "input",
+        8,
+        0
+      ],
+      [
+        "input",
+        1,
+        0
+      ],
+      [
+        "input",
+        0,
+        0
+      ],
+      [
+        "input",
+        3,
+        1
+      ],
+      [
+        "input",
+        6,
+        1
+      ],
+      [
+        "input",
+        4,
+        1
+      ],
+      [
+        "input",
+        5,
+        1
+      ],
+      [
+        "input",
+        7,
+        1
+      ],
+      [
+        "input",
+        2,
+        1
+      ],
+      [
+        "input",
+        8,
+        1
+      ],
+      [
+        "input",
+        1,
+        1
+      ],
+      [
+        "input",
+        0,
+        1
+      ],
+      [
+        "input",
+        3,
+        2
+      ],
+      [
+        "input",
+        6,
+        2
+      ],
+      [
+        "input",
+        4,
+        2
+      ],
+      [
+        "input",
+        5,
+        2
+      ],
+      [
+        "input",
+        7,
+        2
+      ],
+      [
+        "input",
+        2,
+        2
+      ],
+      [
+        "input",
+        8,
+        2
+      ],
+      [
+        "input",
+        1,
+        2
+      ],
+      [
+        "input",
+        0,
+        2
+      ],
+      [
+        "input",
+        3,
+        3
+      ],
+      [
+        "input",
+        6,
+        3
+      ],
+      [
+        "input",
+        4,
+        3
+      ],
+      [
+        "input",
+        5,
+        3
+      ],
+      [
+        "input",
+        7,
+        3
+      ],
+      [
+        "input",
+        2,
+        3
+      ],
+      [
+        "input",
+        8,
+        3
+      ],
+      [
+        "input",
+        1,
+        3
+      ],
+      [
+        "input",
+        0,
+        3
+      ],
+      [
+        "input",
+        8,
+        4
+      ],
+      [
+        "input",
+        1,
+        4
+      ],
+      [
+        "input",
+        4,
+        4
+      ],
+      [
+        "input",
+        7,
+        4
+      ],
+      [
+        "input",
+        6,
+        4
+      ],
+      [
+        "input",
+        5,
+        4
+      ],
+      [
+        "input",
+        3,
+        4
+      ],
+      [
+        "input",
+        2,
+        4
+      ],
+      [
+        "input",
+        0,
+        4
+      ],
+      [
+        "input",
+        8,
+        5
+      ],
+      [
+        "input",
+        1,
+        5
+      ],
+      [
+        "input",
+        4,
+        5
+      ],
+      [
+        "input",
+        7,
+        5
+      ],
+      [
+        "input",
+        6,
+        5
+      ],
+      [
+        "input",
+        5,
+        5
+      ],
+      [
+        "input",
+        3,
+        5
+      ],
+      [
+        "input",
+        2,
+        5
+      ],
+      [
+        "input",
+        0,
+        5
+      ],
+      [
+        "input",
+        8,
+        6
+      ],
+      [
+        "input",
+        1,
+        6
+      ],
+      [
+        "input",
+        4,
+        6
+      ],
+      [
+        "input",
+        7,
+        6
+      ],
+      [
+        "input",
+        6,
+        6
+      ],
+      [
+        "input",
+        5,
+        6
+      ],
+      [
+        "input",
+        3,
+        6
+      ],
+      [
+        "input",
+        2,
+        6
+      ],
+      [
+        "input",
+        0,
+        6
+      ],
+      [
+        "input",
+        8,
+        7
+      ],
+      [
+        "input",
+        1,
+        7
+      ],
+      [
+        "input",
+        4,
+        7
+      ],
+      [
+        "input",
+        7,
+        7
+      ],
+      [
+        "input",
+        6,
+        7
+      ],
+      [
+        "input",
+        5,
+        7
+      ],
+      [
+        "input",
+        3,
+        7
+      ],
+      [
+        "input",
+        2,
+        7
+      ],
+      [
+        "input",
+        0,
+        7
+      ],
+      [
+        "input",
+        8,
+        8
+      ],
+      [
+        "input",
+        1,
+        8
+      ],
+      [
+        "input",
+        4,
+        8
+      ],
+      [
+        "input",
+        7,
+        8
+      ],
+      [
+        "input",
+        6,
+        8
+      ],
+      [
+        "input",
+        5,
+        8
+      ],
+      [
+        "input",
+        3,
+        8
+      ],
+      [
+        "input",
+        2,
+        8
+      ],
+      [
+        "input",
+        0,
+        8
+      ],
+      [
+        "input",
+        8,
+        9
+      ],
+      [
+        "input",
+        1,
+        9
+      ],
+      [
+        "input",
+        4,
+        9
+      ],
+      [
+        "input",
+        7,
+        9
+      ],
+      [
+        "input",
+        6,
+        9
+      ],
+      [
+        "input",
+        5,
+        9
+      ],
+      [
+        "input",
+        3,
+        9
+      ],
+      [
+        "input",
+        2,
+        9
+      ],
+      [
+        "input",
+        0,
+        9
+      ],
+      [
+        "state",
+        1,
+        4
+      ],
+      [
+        "state",
+        3,
+        4
+      ],
+      [
+        "state",
+        0,
+        4
+      ],
+      [
+        "state",
+        2,
+        4
+      ],
+      [
+        "state",
+        1,
+        5
+      ],
+      [
+        "state",
+        3,
+        5
+      ],
+      [
+        "state",
+        0,
+        5
+      ],
+      [
+        "state",
+        2,
+        5
+      ],
+      [
+        "state",
+        1,
+        6
+      ],
+      [
+        "state",
+        3,
+        6
+      ],
+      [
+        "state",
+        0,
+        6
+      ],
+      [
+        "state",
+        2,
+        6
+      ],
+      [
+        "state",
+        1,
+        7
+      ],
+      [
+        "state",
+        3,
+        7
+      ],
+      [
+        "state",
+        0,
+        7
+      ],
+      [
+        "state",
+        2,
+        7
+      ],
+      [
+        "state",
+        1,
+        8
+      ],
+      [
+        "state",
+        3,
+        8
+      ],
+      [
+        "state",
+        0,
+        8
+      ],
+      [
+        "state",
+        2,
+        8
+      ],
+      [
+        "state",
+        1,
+        9
+      ],
+      [
+        "state",
+        3,
+        9
+      ],
+      [
+        "state",
+        0,
+        9
+      ],
+      [
+        "state",
+        2,
+        9
+      ],
+      [
+        "residual",
+        0,
+        4
+      ],
+      [
+        "residual",
+        3,
+        4
+      ],
+      [
+        "residual",
+        1,
+        4
+      ],
+      [
+        "residual",
+        2,
+        4
+      ],
+      [
+        "residual",
+        0,
+        5
+      ],
+      [
+        "residual",
+        3,
+        5
+      ],
+      [
+        "residual",
+        1,
+        5
+      ],
+      [
+        "residual",
+        2,
+        5
+      ],
+      [
+        "residual",
+        0,
+        6
+      ],
+      [
+        "residual",
+        3,
+        6
+      ],
+      [
+        "residual",
+        1,
+        6
+      ],
+      [
+        "residual",
+        2,
+        6
+      ],
+      [
+        "residual",
+        0,
+        7
+      ],
+      [
+        "residual",
+        3,
+        7
+      ],
+      [
+        "residual",
+        1,
+        7
+      ],
+      [
+        "residual",
+        2,
+        7
+      ],
+      [
+        "residual",
+        0,
+        8
+      ],
+      [
+        "residual",
+        3,
+        8
+      ],
+      [
+        "residual",
+        1,
+        8
+      ],
+      [
+        "residual",
+        2,
+        8
+      ],
+      [
+        "residual",
+        0,
+        9
+      ],
+      [
+        "residual",
+        3,
+        9
+      ],
+      [
+        "residual",
+        1,
+        9
+      ],
+      [
+        "residual",
+        2,
+        9
+      ]
+    ],
+    "observed_fields": [
+      "state",
+      "prediction_error"
+    ],
+    "sensor_coverage": 9,
+    "output_connected_patches": 10,
+    "fingerprint": "b63b704e79af366e997e25965cb01acab517da767e8ee4b8463f3fd1239546e4",
+    "implementation": {
+      "brain.py": "fafadb35f701a432d4c9636ce7515014dbd595e5df031311cd3ff1e1c1cea102",
+      "cortex.py": "270f963fa6ca1c91b0deb19ce0f440cd4881f79205fdd115f64ef23942463482",
+      "column.py": "d3752d27227ca34dfc03134d792cc046fc41d96ac181f19be852a193d1eee203",
+      "ports.py": "f0ec46ba314ee20523ff603473256362ae84a1522e89d39751f082f278aa4dca",
+      "_repair.py": "6c405d9369c215ccc043ede9b325286f2b3706d5e8044e9fa1dff6e8776f823a",
+      "_validation.py": "05d09fd56ec96ef9315cfe569fa818a718795d1aedefd12d5b02bb619808b0ab",
+      "_tensor.py": "51099dd71a80dc85678727372722ff1ca46fda1121545d1ceb7f68f2cf891647"
+    },
+    "admissions": 672,
+    "last_event_id": 671
+  },
+  "config": {
+    "width": 4,
+    "depth": 1,
+    "epochs": 20,
+    "samples": 96,
+    "ticks": 96,
+    "device": "python",
+    "parameter_prior": 1.0
+  },
+  "teacher": "explicit local sensory action-preference demonstrations; no live teacher",
+  "baseline": {
+    "examples": 48,
+    "qualified": 48,
+    "correct": 5,
+    "action_agreement": 0.10416666666666667,
+    "max_error": 1.148404797369727,
+    "work": {
+      "evaluations": 394,
+      "edge_visits": 108744,
+      "patch_visits": 7880,
+      "proposals": 298,
+      "backtracks": 0
+    }
+  },
+  "bootstrap": {
+    "options": {
+      "max_error": 0.12,
+      "epochs": 20,
+      "seed": 2,
+      "budget": 2048
+    },
+    "passed": true,
+    "reason": "passed",
+    "epochs": 7,
+    "presentations": 672,
+    "accepted": 672,
+    "examples": 96,
+    "checks": 24,
+    "history": [
+      {
+        "epoch": 0,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 1.03146401809517
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 1.0311960744277073
+        }
+      },
+      {
+        "epoch": 1,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.7008356325864549
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.8303094491052937
+        }
+      },
+      {
+        "epoch": 2,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.30984684254580586
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.4681783455380476
+        }
+      },
+      {
+        "epoch": 3,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.22555814216749448
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.29708608615526655
+        }
+      },
+      {
+        "epoch": 4,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.15297692203170354
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.20030927052477246
+        }
+      },
+      {
+        "epoch": 5,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.13017040533026858
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.17430910673663708
+        }
+      },
+      {
+        "epoch": 6,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.10726526271488679
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.1339885267932574
+        }
+      },
+      {
+        "epoch": 7,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.09305770496530157
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.10174992006314447
+        }
+      }
+    ],
+    "work": {
+      "evaluations": 163994,
+      "edge_visits": 45262344,
+      "patch_visits": 3279880,
+      "proposals": 160730,
+      "backtracks": 66442
+    },
+    "failure": null
+  },
+  "heldout": {
+    "examples": 48,
+    "qualified": 48,
+    "correct": 48,
+    "action_agreement": 1.0,
+    "max_error": 0.09473315962633216,
+    "work": {
+      "evaluations": 7888,
+      "edge_visits": 2177088,
+      "patch_visits": 157760,
+      "proposals": 7792,
+      "backtracks": 3536
+    }
+  },
+  "checkpoint": "{\"admissions\":672,\"biases\":[0.10068023774248283,-0.014452964079839852,-0.011332211039762305,-0.06961238959970584,0.024127630714221634,0.013547553604384826,0.04504204002351459,0.05335593768109169,-0.08716897953071134,-0.425038123291864],\"config\":{\"backtracks\":32,\"device\":\"python\",\"dtype\":\"float64\",\"fan_in\":null,\"initial_scale\":0.3,\"max_connections\":1000000,\"max_inputs\":1000000,\"max_patches\":10000,\"parameter_bound\":4.0,\"parameter_prior\":1.0,\"seed\":2,\"settle_budget\":2048,\"state_bound\":1.0,\"state_prior\":0.01,\"step\":1.0,\"tolerance\":1e-06},\"event_digest\":\"b24f5236d9414030294613c3023f3d71853811e328a3392952057a64daeeb5c4\",\"event_id\":671,\"fingerprint\":\"b63b704e79af366e997e25965cb01acab517da767e8ee4b8463f3fd1239546e4\",\"implementation\":{\"_repair.py\":\"6c405d9369c215ccc043ede9b325286f2b3706d5e8044e9fa1dff6e8776f823a\",\"_tensor.py\":\"51099dd71a80dc85678727372722ff1ca46fda1121545d1ceb7f68f2cf891647\",\"_validation.py\":\"05d09fd56ec96ef9315cfe569fa818a718795d1aedefd12d5b02bb619808b0ab\",\"brain.py\":\"fafadb35f701a432d4c9636ce7515014dbd595e5df031311cd3ff1e1c1cea102\",\"column.py\":\"d3752d27227ca34dfc03134d792cc046fc41d96ac181f19be852a193d1eee203\",\"cortex.py\":\"270f963fa6ca1c91b0deb19ce0f440cd4881f79205fdd115f64ef23942463482\",\"ports.py\":\"f0ec46ba314ee20523ff603473256362ae84a1522e89d39751f082f278aa4dca\"},\"layout\":{\"inputs\":[{\"name\":\"food\",\"shape\":[9]}],\"outputs\":[{\"indices\":[0,1,2,3,4,5],\"name\":\"action\",\"reads\":\"observer_0\",\"shape\":[6]}],\"populations\":[{\"inputs\":[\"food\"],\"name\":\"perception\",\"observes\":[],\"patches\":4},{\"inputs\":[\"food\"],\"name\":\"observer_0\",\"observes\":[\"perception\"],\"patches\":6}]},\"schema\":\"population-brain/1\",\"state\":[-0.020741417222538815,0.048727490305270425,0.0637559907523902,-0.03720022828859599,-0.12435300177159621,0.1732351578346601,0.4422303560457262,0.024994792968420682,0.2913126124515909,-0.4],\"weights\":[-0.08053024828208999,-0.26019035713613375,-0.25473488690631874,-0.03615938139467021,-0.11647276221758748,-0.051939342047208896,-0.12462664463677564,0.017741093406111602,-0.10353744471770303,-0.0514255626456806,0.03781060287157536,-0.46304450879182796,0.32351185874123556,0.097154976777006,0.2154984572494859,0.4096390072069923,-0.04046380728961756,-0.228523663805599,-0.1452335584792825,-0.27145707537691927,1.1562816880917313,0.041164550118437504,-0.0963737616299328,-0.167639908536696,-0.1463373735005553,-0.14624881513946833,-0.24514667851817362,0.06281001190915608,0.12653974705948196,-0.004084498232199459,-0.011650096959709647,0.02781338823235059,0.10034571155089253,0.05309541978502836,0.059805476815509406,0.23092410018627585,-0.12855625150358588,1.08326728166317,-0.3748610708781034,-0.0674178694903005,-0.20039970278479,0.045342485085572884,-0.10209314954342043,1.0643178912621487,0.9585279570800315,0.7013642000885612,-0.0037259599795515966,-0.17805102258621572,-0.08604832934609875,-0.141046493216951,0.9065557716993883,-0.003709589109597696,0.9341700891951423,0.12678465415574194,0.7762219878887897,-0.06314260201292521,-0.1625693662400603,1.0207726220271425,0.8987696563870566,-0.14850857208699014,-0.07798239840768793,-0.2126625112438056,-0.04622695137509711,-0.16091739855237366,-0.12575547984656882,-0.3154384626922894,-0.0971664663643661,0.8506720196719889,0.07550109075077516,1.0142441995659885,-0.13004500748439238,0.8567177460456626,0.40127679051300197,0.21329950491202423,1.4723212236002157,0.07355232200172884,0.2433624066560912,0.08379296426894495,0.11990412066231997,0.34239795377249327,0.15203677857959644,0.010919134576077221,-0.00957963091233908,0.02505613111756682,0.004090199191609971,-0.0021968164171225586,0.014706274768135217,-0.004847507167371789,0.0027891409788979387,-0.021421474944476028,-0.03509704796192015,0.33999878271253564,-0.01594478875799185,-0.5929634587050807,0.891821619446685,0.002378153367670411,-0.009970800147013778,-0.33445870030902997,0.5467438293375946,0.11248269242336034,-0.28558762311642183,-0.5647908699510844,-0.15559593591402124,0.36296796118319036,-0.3092820684359328,-0.7513265973223082,-0.5458520619820697,0.14359116942988134,-0.639810017902402,1.608191614939725,-0.037281354269289954,0.0395482933251664,0.03524806672516935,-0.03164214687957961,0.09730882951698239,0.20476512616942857,-0.015182749556330918,-0.06568139519003974,0.055571206034577846,-0.034651060462631264,0.3608874164266867,-0.1808820925767983,-0.07373224872234675,0.12450800687137034,0.24716238364425036,-0.2713253968776371,-0.0048999227721185125,0.16651486555604908,-0.08299506668441783,-0.28502897395924165,-0.3068752685364847,0.02929415283973794,-0.3471438719746282,0.637994487010812,0.023891439963895707,-0.066412507726555,-0.02941438819144416,0.035014333153743554]}",
+  "checkpoint_sha256": "7060fd4e21ebc60f5038bf3d188920ccbca9f79ff39447e6d93e281da3bcac97",
+  "checkpoint_roundtrip": true,
+  "live": {
+    "seed": 402,
+    "ticks_requested": 96,
+    "ticks_completed": 96,
+    "alive": 1,
+    "body_mass": 62,
+    "initial_total_mass": 880,
+    "final_total_mass": 880,
+    "outcomes": {
+      "moved": 37,
+      "ate": 59
+    },
+    "solves": 96,
+    "refused": 0,
+    "work": {
+      "evaluations": 5532,
+      "edge_visits": 1526832,
+      "patch_visits": 110640,
+      "proposals": 5340,
+      "backtracks": 1843
+    },
+    "seconds": 0.2298842910095118,
+    "frames": []
+  },
+  "controls": {
+    "random": {
+      "seed": 402,
+      "ticks_requested": 96,
+      "ticks_completed": 96,
+      "alive": 1,
+      "body_mass": 17,
+      "initial_total_mass": 880,
+      "final_total_mass": 880,
+      "outcomes": {
+        "moved": 60,
+        "none": 26,
+        "ate": 10
+      },
+      "solves": 0,
+      "refused": 0,
+      "work": {},
+      "seconds": 0.023695875017438084,
+      "frames": []
+    },
+    "reflex": {
+      "seed": 402,
+      "ticks_requested": 96,
+      "ticks_completed": 96,
+      "alive": 1,
+      "body_mass": 83,
+      "initial_total_mass": 880,
+      "final_total_mass": 880,
+      "outcomes": {
+        "ate": 78,
+        "moved": 18
+      },
+      "solves": 0,
+      "refused": 0,
+      "work": {},
+      "seconds": 0.023900208005215973,
+      "frames": []
+    }
+  },
+  "untrained_live": {
+    "seed": 402,
+    "ticks_requested": 96,
+    "ticks_completed": 96,
+    "alive": 1,
+    "body_mass": 3,
+    "initial_total_mass": 880,
+    "final_total_mass": 880,
+    "outcomes": {
+      "moved": 96
+    },
+    "solves": 96,
+    "refused": 0,
+    "work": {
+      "evaluations": 852,
+      "edge_visits": 235152,
+      "patch_visits": 17040,
+      "proposals": 660,
+      "backtracks": 0
+    },
+    "seconds": 0.06025420798687264,
+    "frames": []
+  },
+  "seconds": 9.433461583044846,
+  "source_sha256": {
+    "world/__init__.py": "97dd1486fe80c155f5b156e328308df64cdfa1d9e288321da37b43a406467de3",
+    "world/population.py": "3b5fc3b557592edffdc15cd2fc074535c97bceb8a2aff0828f6decfa16955361",
+    "world/random.py": "316ac5d448615a03b7327e394b1bd65b70082ce3f6b47466ed5d4ef9a12de5fc",
+    "world/settling.py": "6f28ad0379419715003b5d053101f563b2b2cc6c0fbde6adfea5cd451f9ccfc2",
+    "world/substrate.py": "fc7514499f6ea2a9d9cc0c3ba785d101532af23c369c2d947cccee705a7227d4"
+  }
+}

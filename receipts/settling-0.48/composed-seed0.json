@@ -1,0 +1,928 @@
+{
+  "schema": "cadence-world-settling-v1",
+  "cadence_version": "0.48.0",
+  "distribution_metadata_version": "0.43.0",
+  "architecture": "composed",
+  "seed": 0,
+  "layout": {
+    "inputs": [
+      {
+        "name": "food",
+        "shape": [
+          9
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name": "action",
+        "reads": "processing_0",
+        "shape": [
+          6
+        ],
+        "sensor_coverage_by_coordinate": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    ],
+    "populations": [
+      {
+        "inputs": [
+          "food"
+        ],
+        "name": "perception",
+        "observes": [],
+        "patches": 4,
+        "role": "processing",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "inputs": [
+          "food",
+          "perception"
+        ],
+        "name": "processing_0",
+        "observes": [],
+        "patches": 6,
+        "role": "processing",
+        "indices": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      }
+    ],
+    "config": {
+      "device": "python",
+      "dtype": "float64",
+      "seed": 0,
+      "settle_budget": 2048,
+      "fan_in": null,
+      "backtracks": 32,
+      "max_patches": 10000,
+      "max_connections": 1000000,
+      "max_inputs": 1000000,
+      "initial_scale": 0.3,
+      "tolerance": 1e-06,
+      "state_prior": 0.01,
+      "parameter_prior": 1.0,
+      "state_bound": 1.0,
+      "parameter_bound": 4.0,
+      "step": 1.0
+    },
+    "patches": 10,
+    "input_samples": 9,
+    "connections": 114,
+    "edges": [
+      [
+        "input",
+        7,
+        0
+      ],
+      [
+        "input",
+        5,
+        0
+      ],
+      [
+        "input",
+        1,
+        0
+      ],
+      [
+        "input",
+        3,
+        0
+      ],
+      [
+        "input",
+        4,
+        0
+      ],
+      [
+        "input",
+        2,
+        0
+      ],
+      [
+        "input",
+        0,
+        0
+      ],
+      [
+        "input",
+        8,
+        0
+      ],
+      [
+        "input",
+        6,
+        0
+      ],
+      [
+        "input",
+        7,
+        1
+      ],
+      [
+        "input",
+        5,
+        1
+      ],
+      [
+        "input",
+        1,
+        1
+      ],
+      [
+        "input",
+        3,
+        1
+      ],
+      [
+        "input",
+        4,
+        1
+      ],
+      [
+        "input",
+        2,
+        1
+      ],
+      [
+        "input",
+        0,
+        1
+      ],
+      [
+        "input",
+        8,
+        1
+      ],
+      [
+        "input",
+        6,
+        1
+      ],
+      [
+        "input",
+        7,
+        2
+      ],
+      [
+        "input",
+        5,
+        2
+      ],
+      [
+        "input",
+        1,
+        2
+      ],
+      [
+        "input",
+        3,
+        2
+      ],
+      [
+        "input",
+        4,
+        2
+      ],
+      [
+        "input",
+        2,
+        2
+      ],
+      [
+        "input",
+        0,
+        2
+      ],
+      [
+        "input",
+        8,
+        2
+      ],
+      [
+        "input",
+        6,
+        2
+      ],
+      [
+        "input",
+        7,
+        3
+      ],
+      [
+        "input",
+        5,
+        3
+      ],
+      [
+        "input",
+        1,
+        3
+      ],
+      [
+        "input",
+        3,
+        3
+      ],
+      [
+        "input",
+        4,
+        3
+      ],
+      [
+        "input",
+        2,
+        3
+      ],
+      [
+        "input",
+        0,
+        3
+      ],
+      [
+        "input",
+        8,
+        3
+      ],
+      [
+        "input",
+        6,
+        3
+      ],
+      [
+        "input",
+        2,
+        4
+      ],
+      [
+        "input",
+        0,
+        4
+      ],
+      [
+        "input",
+        3,
+        4
+      ],
+      [
+        "input",
+        8,
+        4
+      ],
+      [
+        "input",
+        6,
+        4
+      ],
+      [
+        "input",
+        1,
+        4
+      ],
+      [
+        "input",
+        4,
+        4
+      ],
+      [
+        "input",
+        5,
+        4
+      ],
+      [
+        "input",
+        7,
+        4
+      ],
+      [
+        "input",
+        2,
+        5
+      ],
+      [
+        "input",
+        0,
+        5
+      ],
+      [
+        "input",
+        3,
+        5
+      ],
+      [
+        "input",
+        8,
+        5
+      ],
+      [
+        "input",
+        6,
+        5
+      ],
+      [
+        "input",
+        1,
+        5
+      ],
+      [
+        "input",
+        4,
+        5
+      ],
+      [
+        "input",
+        5,
+        5
+      ],
+      [
+        "input",
+        7,
+        5
+      ],
+      [
+        "input",
+        2,
+        6
+      ],
+      [
+        "input",
+        0,
+        6
+      ],
+      [
+        "input",
+        3,
+        6
+      ],
+      [
+        "input",
+        8,
+        6
+      ],
+      [
+        "input",
+        6,
+        6
+      ],
+      [
+        "input",
+        1,
+        6
+      ],
+      [
+        "input",
+        4,
+        6
+      ],
+      [
+        "input",
+        5,
+        6
+      ],
+      [
+        "input",
+        7,
+        6
+      ],
+      [
+        "input",
+        2,
+        7
+      ],
+      [
+        "input",
+        0,
+        7
+      ],
+      [
+        "input",
+        3,
+        7
+      ],
+      [
+        "input",
+        8,
+        7
+      ],
+      [
+        "input",
+        6,
+        7
+      ],
+      [
+        "input",
+        1,
+        7
+      ],
+      [
+        "input",
+        4,
+        7
+      ],
+      [
+        "input",
+        5,
+        7
+      ],
+      [
+        "input",
+        7,
+        7
+      ],
+      [
+        "input",
+        2,
+        8
+      ],
+      [
+        "input",
+        0,
+        8
+      ],
+      [
+        "input",
+        3,
+        8
+      ],
+      [
+        "input",
+        8,
+        8
+      ],
+      [
+        "input",
+        6,
+        8
+      ],
+      [
+        "input",
+        1,
+        8
+      ],
+      [
+        "input",
+        4,
+        8
+      ],
+      [
+        "input",
+        5,
+        8
+      ],
+      [
+        "input",
+        7,
+        8
+      ],
+      [
+        "input",
+        2,
+        9
+      ],
+      [
+        "input",
+        0,
+        9
+      ],
+      [
+        "input",
+        3,
+        9
+      ],
+      [
+        "input",
+        8,
+        9
+      ],
+      [
+        "input",
+        6,
+        9
+      ],
+      [
+        "input",
+        1,
+        9
+      ],
+      [
+        "input",
+        4,
+        9
+      ],
+      [
+        "input",
+        5,
+        9
+      ],
+      [
+        "input",
+        7,
+        9
+      ],
+      [
+        "state",
+        3,
+        4
+      ],
+      [
+        "state",
+        1,
+        4
+      ],
+      [
+        "state",
+        2,
+        4
+      ],
+      [
+        "state",
+        0,
+        4
+      ],
+      [
+        "state",
+        3,
+        5
+      ],
+      [
+        "state",
+        1,
+        5
+      ],
+      [
+        "state",
+        2,
+        5
+      ],
+      [
+        "state",
+        0,
+        5
+      ],
+      [
+        "state",
+        3,
+        6
+      ],
+      [
+        "state",
+        1,
+        6
+      ],
+      [
+        "state",
+        2,
+        6
+      ],
+      [
+        "state",
+        0,
+        6
+      ],
+      [
+        "state",
+        3,
+        7
+      ],
+      [
+        "state",
+        1,
+        7
+      ],
+      [
+        "state",
+        2,
+        7
+      ],
+      [
+        "state",
+        0,
+        7
+      ],
+      [
+        "state",
+        3,
+        8
+      ],
+      [
+        "state",
+        1,
+        8
+      ],
+      [
+        "state",
+        2,
+        8
+      ],
+      [
+        "state",
+        0,
+        8
+      ],
+      [
+        "state",
+        3,
+        9
+      ],
+      [
+        "state",
+        1,
+        9
+      ],
+      [
+        "state",
+        2,
+        9
+      ],
+      [
+        "state",
+        0,
+        9
+      ]
+    ],
+    "observed_fields": [
+      "state",
+      "prediction_error"
+    ],
+    "sensor_coverage": 9,
+    "output_connected_patches": 10,
+    "fingerprint": "14b2a919a7dbc45e7680b40c0c7cf761ace1f0d0704968aaf5b8176bcf88edd8",
+    "implementation": {
+      "brain.py": "fafadb35f701a432d4c9636ce7515014dbd595e5df031311cd3ff1e1c1cea102",
+      "cortex.py": "270f963fa6ca1c91b0deb19ce0f440cd4881f79205fdd115f64ef23942463482",
+      "column.py": "d3752d27227ca34dfc03134d792cc046fc41d96ac181f19be852a193d1eee203",
+      "ports.py": "f0ec46ba314ee20523ff603473256362ae84a1522e89d39751f082f278aa4dca",
+      "_repair.py": "6c405d9369c215ccc043ede9b325286f2b3706d5e8044e9fa1dff6e8776f823a",
+      "_validation.py": "05d09fd56ec96ef9315cfe569fa818a718795d1aedefd12d5b02bb619808b0ab",
+      "_tensor.py": "51099dd71a80dc85678727372722ff1ca46fda1121545d1ceb7f68f2cf891647"
+    },
+    "admissions": 480,
+    "last_event_id": 479
+  },
+  "config": {
+    "width": 4,
+    "depth": 1,
+    "epochs": 20,
+    "samples": 96,
+    "ticks": 96,
+    "device": "python",
+    "parameter_prior": 1.0
+  },
+  "teacher": "explicit local sensory action-preference demonstrations; no live teacher",
+  "baseline": {
+    "examples": 48,
+    "qualified": 48,
+    "correct": 12,
+    "action_agreement": 0.25,
+    "max_error": 1.0707648213907335,
+    "work": {
+      "evaluations": 366,
+      "edge_visits": 83448,
+      "patch_visits": 7320,
+      "proposals": 270,
+      "backtracks": 0
+    }
+  },
+  "bootstrap": {
+    "options": {
+      "max_error": 0.12,
+      "epochs": 20,
+      "seed": 0,
+      "budget": 2048
+    },
+    "passed": true,
+    "reason": "passed",
+    "epochs": 5,
+    "presentations": 480,
+    "accepted": 480,
+    "examples": 96,
+    "checks": 24,
+    "history": [
+      {
+        "epoch": 0,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 1.0463786257286865
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.9967172529321475
+        }
+      },
+      {
+        "epoch": 1,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.58946161093495
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.5221917719120706
+        }
+      },
+      {
+        "epoch": 2,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.38592910133847125
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.5283644097041723
+        }
+      },
+      {
+        "epoch": 3,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.1749672985688507
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.27494116100899435
+        }
+      },
+      {
+        "epoch": 4,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.14345856690409697
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.18030237051684994
+        }
+      },
+      {
+        "epoch": 5,
+        "recall": {
+          "evaluated": 96,
+          "qualified": 96,
+          "max_error": 0.08881240750825145
+        },
+        "checks": {
+          "evaluated": 24,
+          "qualified": 24,
+          "max_error": 0.1099305058081907
+        }
+      }
+    ],
+    "work": {
+      "evaluations": 63554,
+      "edge_visits": 14490312,
+      "patch_visits": 1271080,
+      "proposals": 61154,
+      "backtracks": 20420
+    },
+    "failure": null
+  },
+  "heldout": {
+    "examples": 48,
+    "qualified": 48,
+    "correct": 48,
+    "action_agreement": 1.0,
+    "max_error": 0.09773512235836057,
+    "work": {
+      "evaluations": 4192,
+      "edge_visits": 955776,
+      "patch_visits": 83840,
+      "proposals": 4096,
+      "backtracks": 1524
+    }
+  },
+  "checkpoint": "{\"admissions\":480,\"biases\":[0.06455717991680149,-0.02834866094002114,0.03671180204330981,0.07182633319487859,0.010060015881103614,-0.03279097713692224,-0.010449525082048404,0.04162541188692361,-0.08205625586118387,-0.4155620153282986],\"config\":{\"backtracks\":32,\"device\":\"python\",\"dtype\":\"float64\",\"fan_in\":null,\"initial_scale\":0.3,\"max_connections\":1000000,\"max_inputs\":1000000,\"max_patches\":10000,\"parameter_bound\":4.0,\"parameter_prior\":1.0,\"seed\":0,\"settle_budget\":2048,\"state_bound\":1.0,\"state_prior\":0.01,\"step\":1.0,\"tolerance\":1e-06},\"event_digest\":\"81748326d7a6d1abde3d37fd4ad4ced3b1e8d4437cdeb3aa1263b39c6718a7e4\",\"event_id\":479,\"fingerprint\":\"14b2a919a7dbc45e7680b40c0c7cf761ace1f0d0704968aaf5b8176bcf88edd8\",\"implementation\":{\"_repair.py\":\"6c405d9369c215ccc043ede9b325286f2b3706d5e8044e9fa1dff6e8776f823a\",\"_tensor.py\":\"51099dd71a80dc85678727372722ff1ca46fda1121545d1ceb7f68f2cf891647\",\"_validation.py\":\"05d09fd56ec96ef9315cfe569fa818a718795d1aedefd12d5b02bb619808b0ab\",\"brain.py\":\"fafadb35f701a432d4c9636ce7515014dbd595e5df031311cd3ff1e1c1cea102\",\"column.py\":\"d3752d27227ca34dfc03134d792cc046fc41d96ac181f19be852a193d1eee203\",\"cortex.py\":\"270f963fa6ca1c91b0deb19ce0f440cd4881f79205fdd115f64ef23942463482\",\"ports.py\":\"f0ec46ba314ee20523ff603473256362ae84a1522e89d39751f082f278aa4dca\"},\"layout\":{\"inputs\":[{\"name\":\"food\",\"shape\":[9]}],\"outputs\":[{\"indices\":[0,1,2,3,4,5],\"name\":\"action\",\"reads\":\"processing_0\",\"shape\":[6]}],\"populations\":[{\"inputs\":[\"food\"],\"name\":\"perception\",\"observes\":[],\"patches\":4},{\"inputs\":[\"food\",\"perception\"],\"name\":\"processing_0\",\"observes\":[],\"patches\":6}]},\"schema\":\"population-brain/1\",\"state\":[0.12242753877638354,0.29177292370057284,-0.4486593741818765,-0.2681789043360033,0.17323515783466015,0.31402092534699755,0.7282542059818113,-0.2682711820216014,0.9972829600991421,-0.4],\"weights\":[0.021007890695856877,0.03471614774643807,-0.15556041993782432,-0.11740080387865331,0.36757287398110844,-0.3401985923417022,-0.43504613127377806,-0.015183846105956803,-0.2111320869342241,0.11198541697738075,0.12152706654370007,-0.16187382588798818,-0.054377703764748174,0.28873458525595413,-0.03035580188999571,-0.2563037468909799,0.216450807375511,0.006266466209617016,0.18045996689169905,0.11361354407292952,-0.1266118104651788,0.20049025293184577,-0.9767683378243976,0.060798542682375535,0.062469413890299315,0.25626605788528245,0.3413278398385136,-0.05222526764085747,0.16763800403555382,0.09334376198433372,-0.23321031476227108,-0.519692433680198,0.1936434305567042,-0.07752619741347885,0.1383972534080694,-0.2338318874219139,0.8203624355384733,0.761630260999057,-0.054715372218800996,-0.003966528001618547,-0.11837250713899856,0.9850597005562193,-0.31764053068592535,0.03351654277284502,0.04609126397291363,0.949923687436032,-0.0208768016130925,0.02214477843634369,0.8242290626695012,-0.10108319491978611,0.034338859604321065,-0.12792624558792057,0.9775879484253107,0.013242035879036999,-0.1094834666751171,-0.06682472800657066,-0.14522820833534658,0.8451333391822741,0.8522339321408873,0.08749624791502346,-0.12626657598866756,-0.09960208071454436,1.0056531308347048,-0.1948406844745368,0.739059162454044,0.8704055793860055,-0.12305582510855753,0.729330975494477,-0.0354759100210668,-0.16924487735098673,0.04121302642496898,-0.03550716323369446,0.3225449948700009,0.30037112460859106,0.10256772660553874,0.42093869871032225,0.2797089903818237,0.10887120316490052,1.57455233108323,0.2114499251774893,0.05506535903260997,0.007219205266621991,0.0069399164719982235,-0.015243715943878397,-0.0027868452829298,-0.021161150533622042,0.016855223941141396,-0.05520966803731539,0.003730400706439026,-0.014732541451484438,0.29244283313212444,-0.44280482201260835,0.12384547069752003,-0.7506778372491524,0.5583923736799348,0.1950449345352435,0.4966288005575693,-0.2023902916212097,0.07715753764589103,0.23215791846483738,0.7750643534491847,-0.23995608144919292,-0.3235271678664113,-0.35451455482755806,0.63914393485056,-0.6597282442700684,-0.8407782930131713,0.474890756202891,-1.3553987634006621,0.3726211240751103,-0.07252386543609528,0.07758168956575669,0.0015099955021067896,-0.017056389633995004]}",
+  "checkpoint_sha256": "eed52de7c268393edde601e614ce31205f004c9281d8a88c13e3dfc7a957f323",
+  "checkpoint_roundtrip": true,
+  "live": {
+    "seed": 400,
+    "ticks_requested": 96,
+    "ticks_completed": 96,
+    "alive": 1,
+    "body_mass": 71,
+    "initial_total_mass": 880,
+    "final_total_mass": 880,
+    "outcomes": {
+      "ate": 60,
+      "moved": 36
+    },
+    "solves": 96,
+    "refused": 0,
+    "work": {
+      "evaluations": 2769,
+      "edge_visits": 631332,
+      "patch_visits": 55380,
+      "proposals": 2577,
+      "backtracks": 600
+    },
+    "seconds": 0.11739004199625924,
+    "frames": []
+  },
+  "controls": {
+    "random": {
+      "seed": 400,
+      "ticks_requested": 96,
+      "ticks_completed": 96,
+      "alive": 1,
+      "body_mass": 22,
+      "initial_total_mass": 880,
+      "final_total_mass": 880,
+      "outcomes": {
+        "ate": 13,
+        "moved": 67,
+        "none": 16
+      },
+      "solves": 0,
+      "refused": 0,
+      "work": {},
+      "seconds": 0.024224292021244764,
+      "frames": []
+    },
+    "reflex": {
+      "seed": 400,
+      "ticks_requested": 96,
+      "ticks_completed": 96,
+      "alive": 1,
+      "body_mass": 85,
+      "initial_total_mass": 880,
+      "final_total_mass": 880,
+      "outcomes": {
+        "ate": 74,
+        "moved": 22
+      },
+      "solves": 0,
+      "refused": 0,
+      "work": {},
+      "seconds": 0.02422345901140943,
+      "frames": []
+    }
+  },
+  "untrained_live": {
+    "seed": 400,
+    "ticks_requested": 96,
+    "ticks_completed": 96,
+    "alive": 1,
+    "body_mass": 25,
+    "initial_total_mass": 880,
+    "final_total_mass": 880,
+    "outcomes": {
+      "ate": 13,
+      "moved": 2,
+      "none": 81
+    },
+    "solves": 96,
+    "refused": 0,
+    "work": {
+      "evaluations": 373,
+      "edge_visits": 85044,
+      "patch_visits": 7460,
+      "proposals": 181,
+      "backtracks": 0
+    },
+    "seconds": 0.039524000021629035,
+    "frames": []
+  },
+  "seconds": 3.531624416995328,
+  "source_sha256": {
+    "world/__init__.py": "97dd1486fe80c155f5b156e328308df64cdfa1d9e288321da37b43a406467de3",
+    "world/population.py": "3b5fc3b557592edffdc15cd2fc074535c97bceb8a2aff0828f6decfa16955361",
+    "world/random.py": "316ac5d448615a03b7327e394b1bd65b70082ce3f6b47466ed5d4ef9a12de5fc",
+    "world/settling.py": "6f28ad0379419715003b5d053101f563b2b2cc6c0fbde6adfea5cd451f9ccfc2",
+    "world/substrate.py": "fc7514499f6ea2a9d9cc0c3ba785d101532af23c369c2d947cccee705a7227d4"
+  }
+}
