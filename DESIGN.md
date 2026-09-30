@@ -1,6 +1,6 @@
 # cadence-world: shared observers constructing a world
 
-Date: 2026-09-17. Status: W0 built in Python with tests; the page runs W0 to W3 in one file (evolving records brains, symbols, the three views, the live brain scan); section 10 holds the first measurement. Prompted by a Telegram reader's request for a
+Date: 2026-09-17. Status: W0 built in Python with tests; the page runs W0 to W3 in one file (symbols, the three views, the live brain scan); section 10 holds the first measurement; since the third build (section 16, 2026-09-30) the page's creatures carry Cadence 0.50 settlement brains in place of the records brains. Prompted by a Telegram reader's request for a
 Conway-like, visual, aesthetic simulation of how shared observers construct reality, and by the
 cadence-adaptation programme's result that wiring is evolved across generations while records are
 learned within a life (`cadence-adaptation/fable/2026-09-17-evolved-development.md`).
@@ -478,3 +478,56 @@ speaking, which the heard group carries; what is said carries nothing yet.
 four-rule world holds a population (its run is in `receipts/sweep5b-2026-09-18/`). The read
 price stays a price: reading free is the control that shows the ceiling, and the page keeps a
 physical world.
+
+## 16. The third build: settlement brains (2026-09-30)
+
+Bernhard's direction: update the page world for Cadence 0.50 and give its inhabitants deeper
+brains. The records cortices are replaced by deep recursive settlement networks in the 0.50
+model, reimplemented in `sim/core.js` so an evolving population of them runs in one browser tab.
+
+**The brain.** A genome develops into a perception population and one to four recursive observer
+stages tapering toward a policy stage whose settled states are the action values. Every stage
+reads the masked senses; every stage above perception draws a third of its fan-in from the states
+and a third from the prediction errors of all earlier stages. The patch law is the library's:
+`p = tanh(b + w·signals)`, `e = x − p`, one joint energy `½Σe² + 0.01/2·Σx²`, repaired by
+projected analytic-gradient descent with sufficient-decrease backtracking and the
+Barzilai–Borwein secant step, states bounded at 1, parameters at 4. A tick is one joint settle;
+the horizon gene searches through hypothetical settles of imagined readings; learning is anchored
+parameter repair (the prior a gene) toward the `Reinforcement` one-step target
+`(1−γ)·0.9·r/4 + γ·clip(max_a q', ±0.9)` with the taken action's policy state clamped. A solve
+that misses stationarity refuses and retains nothing; a refused settle waits, a refused or
+unpaired transition is dropped, and all of it is counted.
+
+**What the page pays for speed, disclosed.** Tolerance `1e-3` against the library default `1e-6`;
+sweep budgets 12 (settle), 48 (learn), 8 (imagined), 64 at birth; quiet transitions admitted every
+fourth tick while rewarding ones always are; `tanh` by table interpolation with error below
+`1e-5`; no event custody, no checkpoints, float64 JavaScript throughout. This is a
+reimplementation of the model, not the `cadence-net` engine, and its receipts are not evidence
+about the Python lanes.
+
+**The genome.** `radius, width (6–20), depth (1–4), fanin (6–16), prior (0.1–1.0), horizon,
+symbols, splitAt, eps, gamma`, one mask over the sense groups, one wiring seed. Founders read
+every group at width 10, depth 2, fan-in 9. The old cortex list, the inner-code group and the
+add/remove/split-cortex mutations are gone: recursive observation replaces the inner channel, and
+depth is a gene, not a cortex census.
+
+**The price.** Per tick: 0.08 existing + 0.0001 per sensed unit (the page's quarter price)
++ 0.0004 per patch + 0.00001 per relation + 0.0005 per accepted repair sweep, settling, imagining
+and learning alike, + movement, speech and biting as before. Depth costs patches, relations and
+sweeps, so a deeper observer is a metabolic trade; at a first, dearer price set the population
+died out while eating exactly as well as the records brains (mean 40.6 against 42.2 meals at tick
+600, survivor age 255 against 240), which located the failure in the split margin, not the
+behavior, and set these prices.
+
+**What the world selected in the first two probes**
+(`receipts/probe-settlement-2026-09-30/`, the page world, 6,000 ticks, seeds 1 and 2). The
+ecology holds 352 and 375 creatures with mass conserved and 96.5–99.8 per cent of solves
+qualifying. One move of lookahead through hypothetical settles sweeps: 91 and 72 per cent of the
+final populations carry horizon 1 or 2. The two-stage plan the founders carry outlives its
+neighbours in the lifetime-at-death tables of both seeds (median 68 and 76 ticks against 53 and
+49 at depth 1, 45 and 47 at depth 3; depth 4 is rare); 20–29-patch brains outlive both smaller
+and larger ones (71 and 78 against 51/48 below and 49/58 above). Every sense group stays read by
+99–100 per cent of the population, so at the quarter read price seeing survives biting here as it
+did in sweep 5. Speech is nearly extinct (4–5 per cent) and symbol MI stays at chance. These
+tables are selection under a price, not matched-control comparisons; the survival lane owns
+capability claims, and no depth advantage is asserted from this page.

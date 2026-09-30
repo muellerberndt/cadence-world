@@ -1,5 +1,16 @@
 /* cadence-world core: the substrate, the genome, the brain, the population. No DOM.
-   Used by web/index.html (inlined) and by sim/probe.js (node). */
+   Used by web/index.html (inlined) and by sim/probe.js (node).
+
+   The brains are deep recursive settlement networks in the Cadence 0.50 model,
+   reimplemented here in JavaScript so a thousand of them fit in a browser tick:
+   the same patch law (tanh prediction, e = x - p, one joint energy with a state
+   prior), the same repair rule (projected analytic-gradient descent with
+   sufficient-decrease backtracking and the Barzilai-Borwein secant step), the
+   same anchored parameter repair for learning, and the Reinforcement helper's
+   one-step Q target. It is a reimplementation, not the cadence-net reference
+   engine: it runs at a page-scale tolerance and sweep budget, and it keeps no
+   event custody or checkpoint identity. Refused solves are counted and acted
+   on as waits; nothing hides behind a reflex fallback. */
 (function (root, factory) { if (typeof module === 'object' && module.exports) module.exports = factory(); else root.CW = factory(); })(typeof self !== 'undefined' ? self : this, function () {
 'use strict';
 
@@ -15,13 +26,33 @@ Mulberry.prototype.random = function () {
 // ---------- the rules: each a flag, each one physical rule ----------
 const RULES = { ripen: false, rock: false, night: false, kinds: false, bite: false, carry: false, digest: false };
 const CFG = { w: 96, h: 96, soil: 6, grow: 0.08, decay: 0.01, diffuse: 0.05, day: 900, season: 9000, contrastMin: 0.25, foodCap: 8, ripenTicks: 30, rockFraction: 0.12, nightBelow: 0.35, warmup: 400, digestTicks: 6 };
-const POP = { initial: 300, birth: 12, max: 1500, base: 0.08, move: 0.05, emit: 0.02, bite: 0.10, read: 0.0004, imagine: 0.1, cell: 0.01 / 256, write: 0.002 };
+const POP = { initial: 300, birth: 12, max: 1500, base: 0.08, move: 0.05, emit: 0.02, bite: 0.10, read: 0.0004, patch: 0.0004, conn: 0.00001, sweep: 0.0005 };
 const N = CFG.w * CFG.h;
 const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const OUTCOMES = ['none', 'moved', 'blocked', 'ate', 'spoke', 'bit', 'spoiled', 'bitten'];
-const GROUP_NAMES = ['food', 'occ', 'energy', 'out', 'light', 'green', 'rock', 'kind', 'lastkind', 'kin', 'dark', 'carried', 'heard', 'inner'];
-const INNER_WIDTH = 16, MAX_CORTICES = 4; // the inner group: each cortex's code of the previous tick, folded onto 32 units
+const GROUP_NAMES = ['food', 'occ', 'energy', 'out', 'light', 'green', 'rock', 'kind', 'lastkind', 'kin', 'dark', 'carried', 'heard'];
 const WINDOW_WIDTH = { food: 9, occ: 1, green: 4, rock: 1, kind: 1, kin: 1 }; // per-cell width of the window groups
+
+// the settlement engine's numbers: the library defaults except where the page
+// pays for speed with a coarser tolerance and smaller sweep budgets (disclosed)
+const BRAIN = {
+  statePrior: 0.01, stateBound: 1, paramBound: 4, initScale: 0.3, // library defaults
+  tolerance: 1e-3, step: 1.0, backtracks: 12,                     // page scale: the library default tolerance is 1e-6
+  settleBudget: 12, learnBudget: 48, imagineBudget: 8, birthBudget: 64,
+  valueScale: 0.9, rewardScale: 4,                                // the Reinforcement target's scales
+  learnEvery: 4,                                                  // quiet transitions are admitted every fourth tick; rewarding ones always
+};
+
+// tanh by table interpolation (4096 cells over [-8, 8], error below 1e-5, far
+// under the page tolerance); the derivative uses the interpolated value
+const TANH_N = 4096, TANH_LO = -8, TANH_SCALE = TANH_N / 16;
+const TANH_T = new Float64Array(TANH_N + 2);
+for (let i = 0; i <= TANH_N + 1; i++) TANH_T[i] = Math.tanh(TANH_LO + i / TANH_SCALE);
+function ftanh(x) {
+  if (x >= 8) return 1; if (x <= -8) return -1;
+  const u = (x - TANH_LO) * TANH_SCALE, i = u | 0, f = u - i;
+  return TANH_T[i] + (TANH_T[i + 1] - TANH_T[i]) * f;
+}
 
 function actionsFor(rules, K) {
   const a = ['north', 'east', 'south', 'west', 'eat', 'wait'];
@@ -90,43 +121,27 @@ class Substrate {
 }
 
 // ---------- the genome: what is inherited ----------
-const GENE = { radius: [1, 2], horizon: [0, 1, 2], symbols: [0, 1, 2, 4], splitAt: [24, 32, 48, 64], eps: [0.02, 0.05, 0.1, 0.2], lr: [0.05, 0.1, 0.2, 0.4], gamma: [0, 0.3, 0.6, 0.9] };
-const CORTEX = { cells: [64, 128, 256, 512, 1024], active: [4, 8, 16, 32], fanin: [4, 6, 8, 12] };
+// The body of the brain is a body plan: how wide the perception population is,
+// how many recursive observer stages stand above it, how many signals each
+// patch reads, how strongly parameters are anchored when it learns, and which
+// sense groups reach it at all. A child inherits the plan, never the parent's
+// settled states or learned relations.
+const GENE = { radius: [1, 2], width: [6, 10, 14, 20], depth: [1, 2, 3, 4], fanin: [6, 9, 12, 16], prior: [0.1, 0.3, 0.6, 1.0], horizon: [0, 1, 2], symbols: [0, 1, 2, 4], splitAt: [24, 32, 48, 64], eps: [0.02, 0.05, 0.1, 0.2], gamma: [0, 0.3, 0.6, 0.9] };
 const G = (g, k) => GENE[k][g[k]];
 const bit = name => 1 << GROUP_NAMES.indexOf(name);
 const FIRST_MASK = bit('food') | bit('occ') | bit('energy') | bit('out') | bit('light');
 
-function firstGenome(rng, available) { // the founders read everything the world offers through one cortex; evolution prunes and splits it
-  const inner = GROUP_NAMES.indexOf('inner');
-  const mask = available ? available.filter(gi => gi !== inner).reduce((m, gi) => m | (1 << gi), 0) : FIRST_MASK;
-  return { radius: 0, horizon: 0, symbols: 0, splitAt: 0, eps: 2, lr: 2, gamma: 2, hue: rng.random(),
-    cortices: [{ mask, cells: 2, active: 1, fanin: 2, wiring: (rng.random() * 4294967296) >>> 0 }] };
+function firstGenome(rng, available) { // the founders read everything the world offers and carry one observer stage between perception and policy
+  const mask = available ? available.reduce((m, gi) => m | (1 << gi), 0) : FIRST_MASK;
+  return { radius: 0, width: 1, depth: 1, fanin: 1, prior: 1, horizon: 0, symbols: 0, splitAt: 0, eps: 2, gamma: 2, hue: rng.random(),
+    mask, wiring: (rng.random() * 4294967296) >>> 0 };
 }
 function stepGene(v, n, rng) { return Math.max(0, Math.min(n - 1, v + (rng.random() < 0.5 ? -1 : 1))); }
 function mutate(g, rng, groupsAvailable) {
-  const c = Object.assign({}, g); c.cortices = g.cortices.map(x => Object.assign({}, x));
+  const c = Object.assign({}, g);
   for (const k of Object.keys(GENE)) if (rng.random() < 0.12) c[k] = stepGene(c[k], GENE[k].length, rng);
-  for (const x of c.cortices) {
-    for (const k of Object.keys(CORTEX)) if (rng.random() < 0.08) x[k] = stepGene(x[k], CORTEX[k].length, rng);
-    if (rng.random() < 0.10) { const b = 1 << (groupsAvailable[(rng.random() * groupsAvailable.length) | 0]); const m = x.mask ^ b; if (m) x.mask = m; }
-    if (rng.random() < 0.03) x.wiring = (rng.random() * 4294967296) >>> 0;
-  }
-  if (rng.random() < 0.06 && c.cortices.length < MAX_CORTICES) { // a new cortex: a copy of one, one bit changed, its own wiring
-    const src = c.cortices[(rng.random() * c.cortices.length) | 0]; const x = Object.assign({}, src);
-    const b = 1 << (groupsAvailable[(rng.random() * groupsAvailable.length) | 0]); if (x.mask ^ b) x.mask ^= b;
-    x.wiring = (rng.random() * 4294967296) >>> 0; c.cortices.push(x);
-  }
-  if (rng.random() < 0.06 && c.cortices.length > 1) c.cortices.splice((rng.random() * c.cortices.length) | 0, 1);
-  if (rng.random() < 0.06 && c.cortices.length < MAX_CORTICES) { // a split: one cortex becomes two halves at the same total cost, the groups partitioned between them
-    const i = (rng.random() * c.cortices.length) | 0, x = c.cortices[i];
-    const bits = []; for (let b = 0; b < GROUP_NAMES.length; b++) if (x.mask & (1 << b)) bits.push(b);
-    if (x.cells >= 1 && bits.length >= 2) {
-      let ma = 0, mb = 0; for (const b of bits) { if (rng.random() < 0.5) ma |= 1 << b; else mb |= 1 << b; }
-      if (!ma) { ma = 1 << bits[0]; mb &= ~ma; } if (!mb) { mb = 1 << bits[bits.length - 1]; ma &= ~mb; }
-      const half = Object.assign({}, x, { cells: x.cells - 1, active: Math.max(0, x.active - 1) });
-      c.cortices.splice(i, 1, Object.assign({}, half, { mask: ma }), Object.assign({}, half, { mask: mb, wiring: (rng.random() * 4294967296) >>> 0 }));
-    }
-  }
+  if (rng.random() < 0.10) { const b = 1 << (groupsAvailable[(rng.random() * groupsAvailable.length) | 0]); const m = c.mask ^ b; if (m) c.mask = m; }
+  if (rng.random() < 0.03) c.wiring = (rng.random() * 4294967296) >>> 0;
   c.hue = (((g.hue + (rng.random() - 0.5) * 0.02) % 1) + 1) % 1;
   return c;
 }
@@ -143,38 +158,87 @@ function layoutFor(rules, r, K) {
   if (rules.night) add('dark', 1);
   if (rules.carry) add('carried', 1);
   add('heard', K + 1);
-  add('inner', INNER_WIDTH * MAX_CORTICES);
   const byName = {}; for (const g of groups) byName[g.name] = g;
   return { groups, byName, D: off, nWin, r, available: groups.map(g => GROUP_NAMES.indexOf(g.name)) };
 }
 
-// ---------- the brain: cortices developed from the genome, records learned in the life ----------
+// perception plus `depth` observer stages, tapering toward the policy stage that carries the action values
+function stageWidths(width, depth, A) {
+  const policy = Math.max(A, Math.round(width / 2));
+  const w = [];
+  for (let s = 0; s <= depth; s++) w.push(Math.max(policy, Math.round(width + (policy - width) * s / depth)));
+  return w;
+}
+
+// ---------- the brain: a deep recursive settlement network developed from the genome ----------
+// Populations of patches; the first reads the masked senses, every later stage
+// reads the senses and observes the states and prediction errors of all earlier
+// stages; the last stage's first A states are the action values. One settle per
+// tick answers all actions jointly; one anchored parameter repair per tick
+// admits the previous transition against the Reinforcement one-step target.
 class Brain {
   constructor(g, rules) {
     this.g = g; this.rules = rules; this.r = G(g, 'radius'); this.K = G(g, 'symbols'); this.horizon = G(g, 'horizon');
-    this.actions = actionsFor(rules, this.K); this.A = this.actions.length;
+    this.actions = actionsFor(rules, this.K); this.A = this.actions.length; this.waitIndex = this.actions.indexOf('wait');
+    this.eps = G(g, 'eps'); this.gamma = G(g, 'gamma'); this.prior = G(g, 'prior');
     this.L = layoutFor(rules, this.r, this.K); this.D = this.L.D; this.nWin = this.L.nWin;
-    this.x = new Uint8Array(this.D); this.q = new Float32Array(this.A); this.lastDelta = 0; this.imagined = 0;
-    this.eps = G(g, 'eps'); this.gamma = G(g, 'gamma'); this.lr = G(g, 'lr') / Math.sqrt(g.cortices.length);
-    this.cortices = g.cortices.map(cx => {
-      const units = []; for (const grp of this.L.groups) if (cx.mask & bit(grp.name)) for (let u = 0; u < grp.size; u++) units.push(grp.off + u);
-      const M = CORTEX.cells[cx.cells], k = Math.min(CORTEX.active[cx.active], M >> 3), fanin = CORTEX.fanin[cx.fanin];
-      const dev = new Mulberry(cx.wiring ^ (units.length * 2654435761));
-      const idx = new Int32Array(M * fanin), w = new Int8Array(M * fanin);
-      for (let i = 0; i < idx.length; i++) { idx[i] = units.length ? units[(dev.random() * units.length) | 0] : 0; w[i] = dev.random() < 0.7 ? 1 : -1; }
-      return { mask: cx.mask, units: units.length, M, k, fanin, idx, w, records: new Float32Array(M * this.A), act: new Int32Array(M), active: new Int32Array(k), prevActive: null };
-    });
-    this.readUnits = this.cortices.reduce((s, c) => s + c.units, 0);
-    this.cellsTotal = this.cortices.reduce((s, c) => s + c.M, 0);
-    this.activeTotal = this.cortices.reduce((s, c) => s + c.k, 0);
-    this.hears = this.cortices.some(c => c.mask & bit('heard'));
-    this.readsInner = this.cortices.some(c => c.mask & bit('inner'));
-    this.halves = this.cortices.length >= 2 && this.readsInner; // two interacting cortices: one reads another's code
-    this.inner = new Uint8Array(INNER_WIDTH * MAX_CORTICES);
-    this.prevQ = null; this.prevAction = -1;
+    this.x = new Uint8Array(this.D); this.q = new Float32Array(this.A);
+    this.depth = G(g, 'depth'); this.width = G(g, 'width'); this.F = G(g, 'fanin');
+    this.widths = stageWidths(this.width, this.depth, this.A);
+    this.pops = []; let off = 0;
+    for (const w of this.widths) { this.pops.push({ off, n: w }); off += w; }
+    this.P = off; this.polOff = this.pops[this.pops.length - 1].off;
+    const P = this.P, F = this.F, D = this.D;
+    // the sense units the mask names; every stage reads them, so depth never hides the world
+    const sensed = []; for (const grp of this.L.groups) if (g.mask & bit(grp.name)) for (let u = 0; u < grp.size; u++) sensed.push(grp.off + u);
+    this.readUnits = sensed.length;
+    // wiring, developed deterministically from the genome: connection index space is
+    // [0,D) the senses, [D,D+P) patch states, [D+P,D+2P) patch prediction errors
+    const dev = new Mulberry(g.wiring ^ (sensed.length * 2654435761));
+    this.cIdx = new Int32Array(P * F); this.W = new Float64Array(P * F); this.Bs = new Float64Array(P);
+    for (let s = 0; s < this.pops.length; s++) {
+      const pop = this.pops[s], lower = pop.off; // patches [0, lower) belong to earlier stages
+      for (let i = pop.off; i < pop.off + pop.n; i++) {
+        const base = i * F;
+        for (let j = 0; j < F; j++) {
+          let k = 0;
+          const kind = s === 0 ? 0 : j % 3; // an observer stage reads senses, observes states, observes errors, in equal parts
+          if (kind === 0 || lower === 0) k = sensed.length ? sensed[(dev.random() * sensed.length) | 0] : 0;
+          else if (kind === 1) k = D + ((dev.random() * lower) | 0);
+          else k = D + P + ((dev.random() * lower) | 0);
+          this.cIdx[base + j] = k;
+          this.W[base + j] = (dev.random() * 2 - 1) * BRAIN.initScale;
+        }
+        this.Bs[i] = (dev.random() * 2 - 1) * BRAIN.initScale;
+      }
+    }
+    this.C = P * F;
+    this.hears = (g.mask & bit('heard')) !== 0;
+    // live activity and the solver's working memory, allocated once
+    this.s = new Float64Array(P); this.e = new Float64Array(P); this.pv = new Float64Array(P);
+    this.gS = new Float64Array(P); this.gE = new Float64Array(P); this.gW = new Float64Array(P * F); this.gB = new Float64Array(P);
+    this.sT = new Float64Array(P); this.wT = new Float64Array(P * F); this.bT = new Float64Array(P);
+    this.dS = new Float64Array(P); this.dW = new Float64Array(P * F); this.dB = new Float64Array(P);
+    this.oS = new Float64Array(P); this.oW = new Float64Array(P * F); this.oB = new Float64Array(P);
+    this.Wa = new Float64Array(P * F); this.Ba = new Float64Array(P); this.sSnap = new Float64Array(P);
+    this.sig = new Float64Array(D + 2 * P);
+    this.hS = [new Float64Array(P), new Float64Array(P), new Float64Array(P)]; // lookahead levels
+    this.hE = [new Float64Array(P), new Float64Array(P), new Float64Array(P)];
+    this.hP = [new Float64Array(P), new Float64Array(P), new Float64Array(P)];
+    this.hQ = [new Float32Array(this.A), new Float32Array(this.A), new Float32Array(this.A)];
+    this.pendX = new Uint8Array(this.D); this.pendS = new Float64Array(P); this.pending = false; this.pendA = -1; this.pendQ = 0;
+    this.sweepsTick = 0; this.lastSettle = 0; this.lastLearn = 0; this.imagined = 0; this.lastDelta = 0;
+    this.decides = 0; this.decideOk = 0; this.learns = 0; this.learnOk = 0; this.waits = 0; this.drops = 0; this.skips = 0; this.tickCount = 0;
+    this.settledOk = false;
+    // the hatchling settles once before its first reading: a rest state to warm-start every later solve
+    this.x.fill(0);
+    if (this.repair(this.x, this.s, this.e, this.pv, -1, 0, false, BRAIN.birthBudget) < 0)
+      this.repair(this.x, this.s, this.e, this.pv, -1, 0, false, 4 * BRAIN.birthBudget);
   }
+
   read(pop, c) {
     const x = this.x; x.fill(0); const s = pop.sub, r = this.r, L = this.L, B = L.byName; let q = 0;
+    this.sweepsTick = 0; this.imagined = 0; this.tickCount++;
     for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++, q++) {
       const i = ((c.y + dy + CFG.h) % CFG.h) * CFG.w + (c.x + dx + CFG.w) % CFG.w;
       if (B.rock) x[B.rock.off + q] = s.rock[i];
@@ -192,22 +256,165 @@ class Brain {
     if (B.dark) x[B.dark.off] = s.dark(c.y * CFG.w + c.x) ? 1 : 0;
     if (B.carried) x[B.carried.off] = c.carried;
     x[B.heard.off + Math.min(c.heard, this.K)] = 1;
-    x.set(this.inner, B.inner.off);
   }
-  codeOne(cx, x) {
-    const { M, fanin, idx, w, act } = cx;
-    for (let m = 0; m < M; m++) { let a = 0; const b = m * fanin; for (let j = 0; j < fanin; j++) a += w[b + j] * x[idx[b + j]]; act[m] = a; }
-    const counts = new Int32Array(2 * fanin + 1); for (let m = 0; m < M; m++) counts[act[m] + fanin]++;
-    let need = cx.k, threshold = fanin, over = 0;
-    for (let v = 2 * fanin; v >= 0; v--) { if (counts[v] >= need) { threshold = v - fanin; over = need; break; } need -= counts[v]; threshold = v - fanin - 1; }
-    let n = 0, atT = 0;
-    for (let m = 0; m < M && n < cx.k; m++) { if (act[m] > threshold) cx.active[n++] = m; else if (act[m] === threshold && atT < over) { cx.active[n++] = m; atT++; } }
-    while (n < cx.k) cx.active[n++] = 0;
+
+  // the joint energy: E = 1/2 sum e_i^2 + statePrior/2 sum x_i^2 (+ the anchor term during learning).
+  // One forward pass in declaration order fills p, e and returns E; connections
+  // point only at earlier stages, so every observer's error inputs are current.
+  // Signals live in one flat buffer: [0,D) the senses (copied in by repair),
+  // [D,D+P) patch states, [D+P,D+2P) prediction errors, written as the pass walks.
+  forward(s, e, pv) {
+    const { cIdx, W, Bs, F, D, P, sig } = this; const sp = BRAIN.statePrior; let E = 0;
+    for (let i = 0; i < P; i++) {
+      let a = Bs[i]; const base = i * F;
+      for (let j = 0; j < F; j++) a += W[base + j] * sig[cIdx[base + j]];
+      const p = ftanh(a); pv[i] = p;
+      const x = s[i], err = x - p; e[i] = err;
+      sig[D + i] = x; sig[D + P + i] = err;
+      E += 0.5 * err * err + 0.5 * sp * x * x;
+    }
+    return E;
   }
-  readOut(x, q) { // q[a] = the sum over cortices of the mean record of the cells the reading touches
-    q.fill(0);
-    for (const cx of this.cortices) { this.codeOne(cx, x); for (let j = 0; j < cx.k; j++) { const b = cx.active[j] * this.A; for (let a = 0; a < this.A; a++) q[a] += cx.records[b + a] / cx.k; } }
+
+  // exact analytic gradient by one reverse pass: observed errors carry their
+  // transitive dependencies back into every state (and, when learning, into the
+  // relations), so feedback flows through the whole joint problem. It expects
+  // sig/e/pv from a forward pass on the same state.
+  gradient(s, e, pv, withParams, pp) {
+    const { cIdx, W, F, D, P, gS, gE, gW, gB, sig } = this; const sp = BRAIN.statePrior;
+    for (let i = 0; i < P; i++) { gE[i] = e[i]; gS[i] = sp * s[i]; }
+    if (withParams) { const { Bs, Wa, Ba } = this; for (let i = 0; i < P; i++) gB[i] = pp * (Bs[i] - Ba[i]); for (let i = 0; i < P * F; i++) gW[i] = pp * (W[i] - Wa[i]); }
+    for (let i = P - 1; i >= 0; i--) {
+      const ge = gE[i]; gS[i] += ge;
+      const ga = -ge * (1 - pv[i] * pv[i]);
+      if (ga === 0) continue;
+      const base = i * F;
+      if (withParams) {
+        gB[i] += ga;
+        for (let j = 0; j < F; j++) {
+          const k = cIdx[base + j], w = W[base + j];
+          gW[base + j] += ga * sig[k];
+          if (k >= D) { if (k < D + P) gS[k - D] += ga * w; else gE[k - D - P] += ga * w; }
+        }
+      } else {
+        for (let j = 0; j < F; j++) {
+          const k = cIdx[base + j];
+          if (k >= D) { const w = W[base + j]; if (k < D + P) gS[k - D] += ga * w; else gE[k - D - P] += ga * w; }
+        }
+      }
+    }
   }
+
+  // projected-gradient repair with backtracking and the BB secant step.
+  // Returns accepted sweeps if the solve qualifies (projected stationarity at
+  // most the tolerance over every eligible coordinate), -1 if it refuses.
+  // clampIdx >= 0 fixes that policy state (a learning target); withParams also
+  // repairs weights and biases toward the anchored objective. A refusal
+  // restores the parameters and retains nothing.
+  repair(xs, s, e, pv, clampIdx, clampVal, withParams, budget) {
+    const { P, F, gS, gW, gB, sT, wT, bT, dS, dW, dB, oS, oW, oB, W, Bs } = this;
+    const pp = this.prior, sb = BRAIN.stateBound, pb = BRAIN.paramBound, tol = BRAIN.tolerance;
+    if (clampIdx >= 0) s[clampIdx] = clampVal;
+    this.sSnap.set(s);
+    const sig = this.sig; for (let i = 0; i < this.D; i++) sig[i] = xs[i]; // the sensory samples stay fixed for the whole solve
+    if (withParams) { this.Wa.set(W); this.Ba.set(Bs); }
+    let E = this.forward(s, e, pv); // the anchor term is zero at the anchor
+    let t = BRAIN.step, sweeps = 0, haveDisp = false;
+    for (;;) {
+      this.gradient(s, e, pv, withParams, pp);
+      // the qualification residual: a unit projected step, clamped coordinates excluded
+      let res = 0;
+      for (let i = 0; i < P; i++) { if (i === clampIdx) continue; const z = s[i]; const d = Math.abs(z - Math.min(sb, Math.max(-sb, z - gS[i]))); if (d > res) res = d; }
+      if (withParams) {
+        for (let i = 0; i < P * F; i++) { const z = W[i]; const d = Math.abs(z - Math.min(pb, Math.max(-pb, z - gW[i]))); if (d > res) res = d; }
+        for (let i = 0; i < P; i++) { const z = Bs[i]; const d = Math.abs(z - Math.min(pb, Math.max(-pb, z - gB[i]))); if (d > res) res = d; }
+      }
+      if (res <= tol) return sweeps; // qualified; live arrays hold the settled proposal
+      if (sweeps >= budget) break;   // budget exhausted: refuse
+      // the BB secant step from the previous accepted displacement and gradient change
+      if (haveDisp) {
+        let ss = 0, sy = 0;
+        for (let i = 0; i < P; i++) { if (i === clampIdx) continue; ss += dS[i] * dS[i]; sy += dS[i] * (gS[i] - oS[i]); }
+        if (withParams) {
+          for (let i = 0; i < P * F; i++) { ss += dW[i] * dW[i]; sy += dW[i] * (gW[i] - oW[i]); }
+          for (let i = 0; i < P; i++) { ss += dB[i] * dB[i]; sy += dB[i] * (gB[i] - oB[i]); }
+        }
+        t = (sy > 0 && isFinite(sy) && ss > 0) ? ss / sy : BRAIN.step;
+        if (!isFinite(t) || t <= 0) t = BRAIN.step;
+      }
+      oS.set(gS); if (withParams) { oW.set(gW); oB.set(gB); }
+      // backtracking line search: project, demand a finite negative slope and sufficient decrease
+      let accepted = false;
+      for (let bt = 0; bt < BRAIN.backtracks; bt++, t *= 0.5) {
+        let slope = 0;
+        for (let i = 0; i < P; i++) {
+          if (i === clampIdx) { sT[i] = s[i]; continue; }
+          const z = Math.min(sb, Math.max(-sb, s[i] - t * gS[i])); sT[i] = z; slope += gS[i] * (z - s[i]);
+        }
+        if (withParams) {
+          for (let i = 0; i < P * F; i++) { const z = Math.min(pb, Math.max(-pb, W[i] - t * gW[i])); wT[i] = z; slope += gW[i] * (z - W[i]); }
+          for (let i = 0; i < P; i++) { const z = Math.min(pb, Math.max(-pb, Bs[i] - t * gB[i])); bT[i] = z; slope += gB[i] * (z - Bs[i]); }
+        }
+        if (!(slope < 0) || !isFinite(slope)) continue;
+        let Et;
+        if (withParams) {
+          for (let i = 0; i < P; i++) dS[i] = sT[i] - s[i];
+          for (let i = 0; i < P * F; i++) dW[i] = wT[i] - W[i];
+          for (let i = 0; i < P; i++) dB[i] = bT[i] - Bs[i];
+          W.set(wT); Bs.set(bT); // the trial parameters go live for the forward pass and revert on rejection
+          Et = this.forward(sT, this.hE[2], this.hP[2]);
+          let anchor = 0;
+          for (let i = 0; i < P * F; i++) { const dv = W[i] - this.Wa[i]; anchor += dv * dv; }
+          for (let i = 0; i < P; i++) { const dv = Bs[i] - this.Ba[i]; anchor += dv * dv; }
+          Et += 0.5 * pp * anchor;
+          if (Et <= E + 1e-4 * slope) { s.set(sT); e.set(this.hE[2]); pv.set(this.hP[2]); E = Et; accepted = true; haveDisp = true; break; }
+          // rejected: restore the pre-trial parameters
+          for (let i = 0; i < P * F; i++) W[i] -= dW[i];
+          for (let i = 0; i < P; i++) Bs[i] -= dB[i];
+        } else {
+          Et = this.forward(sT, this.hE[2], this.hP[2]);
+          if (Et <= E + 1e-4 * slope) {
+            for (let i = 0; i < P; i++) dS[i] = sT[i] - s[i];
+            s.set(sT); e.set(this.hE[2]); pv.set(this.hP[2]); E = Et; accepted = true; haveDisp = true; break;
+          }
+        }
+      }
+      if (!accepted) break; // line search failed: refuse
+      sweeps++;
+    }
+    // a refused proposal retains nothing: parameters and state return to their pre-call values
+    if (withParams) { W.set(this.Wa); Bs.set(this.Ba); }
+    s.set(this.sSnap); this.forward(s, e, pv);
+    return -1;
+  }
+
+  settleLive() { // one joint settle of the whole brain on the current reading; the six-plus action values are the policy states
+    this.decides++;
+    const r = this.repair(this.x, this.s, this.e, this.pv, -1, 0, false, BRAIN.settleBudget);
+    this.settledOk = r >= 0;
+    if (this.settledOk) {
+      this.decideOk++; this.lastSettle = r; this.sweepsTick += r;
+      for (let a = 0; a < this.A; a++) this.q[a] = this.s[this.polOff + a];
+    } else this.lastSettle = -1;
+  }
+
+  learn(reward) { // admit the previous transition against the Reinforcement one-step target, parameters anchored
+    if (!this.pending) return;
+    if (!this.settledOk) { this.pending = false; this.drops++; return; } // no qualified value for the next reading: the transition is dropped, counted
+    if (reward === 0 && (this.tickCount % BRAIN.learnEvery)) { this.pending = false; this.skips++; return; } // the live cadence: rewarding transitions always, quiet ones every fourth tick
+    const v = BRAIN.valueScale, rs = BRAIN.rewardScale, gm = this.gamma;
+    let best = -Infinity; for (let a = 0; a < this.A; a++) if (this.q[a] > best) best = this.q[a];
+    const rw = Math.max(-rs, Math.min(rs, reward));
+    const target = (1 - gm) * v * (rw / rs) + gm * Math.max(-v, Math.min(v, best));
+    this.lastDelta = target - this.pendQ;
+    this.learns++;
+    // a one-row batch: private activity from the transition's own equilibrium, shared parameters, live state preserved
+    const hs = this.hS[2]; hs.set(this.pendS);
+    const r = this.repair(this.pendX, hs, this.hE[1], this.hP[1], this.polOff + this.pendA, target, true, BRAIN.learnBudget);
+    if (r >= 0) { this.learnOk++; this.lastLearn = r; this.sweepsTick += r; } else this.lastLearn = -1;
+    this.pending = false;
+  }
+
   imagine(x, a) { // the reading after a move, as far as the window can tell; null if the move is blocked
     const L = this.L, B = L.byName, r = this.r, wn = 2 * r + 1, [dx, dy] = DIRS[a];
     const centre = (r + dy) * wn + (r + dx);
@@ -224,33 +431,41 @@ class Brain {
     for (let u = 0; u < B.out.size; u++) y[B.out.off + u] = 0; y[B.out.off + 1] = 1;
     return y;
   }
-  lookahead(x, depth) { // the best value reachable from a reading within depth moves
-    const q = new Float32Array(this.A); this.readOut(x, q); this.imagined++;
+
+  settleImagined(xs, level) { // a pure hypothetical settle on scratch activity, warm from the live state; null if it refuses
+    const s = this.hS[level], e = this.hE[level], pv = this.hP[level];
+    s.set(this.s);
+    const r = this.repair(xs, s, e, pv, -1, 0, false, BRAIN.imagineBudget);
+    this.imagined++;
+    if (r < 0) return null;
+    this.sweepsTick += r;
+    const q = this.hQ[level];
+    for (let a = 0; a < this.A; a++) q[a] = s[this.polOff + a];
+    return q;
+  }
+
+  lookahead(x, depth, level) { // the best value reachable from a reading within depth moves
+    const q = this.settleImagined(x, level);
+    if (!q) return -Infinity;
     let best = -Infinity; for (let a = 0; a < this.A; a++) if (q[a] > best) best = q[a];
-    if (depth <= 1) return best;
-    for (let a = 0; a < 4; a++) { const y = this.imagine(x, a); if (!y) continue; const v = this.gamma * this.lookahead(y, depth - 1); if (v > best) best = v; }
+    if (depth <= 1 || level + 1 >= this.hS.length - 1) return best;
+    for (let a = 0; a < 4; a++) { const y = this.imagine(x, a); if (!y) continue; const v = this.gamma * this.lookahead(y, depth - 1, level + 1); if (v > best) best = v; }
     return best;
   }
-  decide(rng) { // the action-value read, then the horizon's search over imagined moves
-    this.imagined = 0;
-    const saved = this.cortices.map(cx => cx.active.slice()); // the real reading's code stays for learning
+
+  decide(rng) { // epsilon over the settled action values, with the horizon's search over imagined readings
+    if (!this.settledOk) { this.waits++; return this.waitIndex; } // a refused settle waits, explicitly
     const score = this.q.slice();
-    if (this.horizon > 0) for (let a = 0; a < 4; a++) { const y = this.imagine(this.x, a); if (!y) continue; score[a] = 0.5 * this.q[a] + 0.5 * this.gamma * this.lookahead(y, this.horizon); }
-    this.cortices.forEach((cx, i) => cx.active.set(saved[i]));
+    if (this.horizon > 0) for (let a = 0; a < 4; a++) { const y = this.imagine(this.x, a); if (!y) continue; const v = this.lookahead(y, this.horizon, 0); if (v > -Infinity) score[a] = 0.5 * this.q[a] + 0.5 * this.gamma * v; }
     const u = rng.random(); let a;
     if (u < this.eps) a = (rng.random() * this.A) | 0;
     else { let best = -Infinity; a = 0; for (let i = 0; i < this.A; i++) if (score[i] > best) { best = score[i]; a = i; } }
-    for (const cx of this.cortices) cx.prevActive = cx.active.slice();
-    this.inner.fill(0); this.cortices.forEach((cx, ci) => { for (let j = 0; j < cx.k; j++) this.inner[ci * INNER_WIDTH + cx.active[j] % INNER_WIDTH] = 1; });
-    this.prevQ = this.q.slice(); this.prevAction = a; this.score = score; return a;
+    this.pendX.set(this.x); this.pendS.set(this.s); this.pendA = a; this.pendQ = this.q[a]; this.pending = true;
+    this.score = score;
+    return a;
   }
-  learn(reward) { // one write into exactly the cells the previous reading touched, by the shared error
-    if (!this.prevQ) return;
-    let best = -Infinity; for (let a = 0; a < this.A; a++) if (this.q[a] > best) best = this.q[a];
-    const a = this.prevAction, err = reward + this.gamma * best - this.prevQ[a]; this.lastDelta = err;
-    for (const cx of this.cortices) for (let j = 0; j < cx.k; j++) cx.records[cx.prevActive[j] * this.A + a] += this.lr * err;
-  }
-  get price() { return POP.read * this.readUnits + POP.cell * this.cellsTotal + POP.write * this.activeTotal; }
+
+  get structurePrice() { return POP.read * this.readUnits + POP.patch * this.P + POP.conn * this.C; }
 }
 
 // ---------- the population, with the known view kept incrementally ----------
@@ -301,7 +516,7 @@ class Population {
       const r = b.r;
       for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const i = ((c.y + dy + CFG.h) % CFG.h) * CFG.w + (c.x + dx + CFG.w) % CFG.w; if (!s.dark(i)) this.record(c, i, s.food[i]); }
       c.heard = b.hears ? this.hear(c) : 0;
-      b.read(this, c); b.readOut(b.x, b.q); b.learn(c.reward);
+      b.read(this, c); b.settleLive(); b.learn(c.reward);
       const a = b.decide(this.rng), name = b.actions[a]; c.last = a; const before = c.energy; let moved = false, extra = 0;
       while (c.gut.length && c.gut[0] <= s.tick) { c.gut.shift(); c.energy++; } // digestion: a unit eaten digestTicks ago becomes energy now
       const here = c.y * CFG.w + c.x;
@@ -322,7 +537,8 @@ class Population {
       } else if (name === 'dig') { if (c.carried === 0 && s.soil[here] > 0) { s.soil[here]--; c.carried = 1; c.outcome = 3; this.events.push({ kind: 'dig', c }); } else c.outcome = 0; }
       else if (name === 'drop') { if (c.carried) { s.soil[here]++; c.carried = 0; c.outcome = 3; this.events.push({ kind: 'drop', c }); } else c.outcome = 0; }
       else { c.symbol = a - b.actions.indexOf('say 1') + 1; c.outcome = 4; this.spoken.push(c); this.events.push({ kind: 'speak', c, symbol: c.symbol }); }
-      const price = POP.base + b.price + POP.read * POP.imagine * b.readUnits * b.imagined + (moved ? POP.move : 0) + (c.outcome === 4 ? POP.emit : 0) + extra;
+      // the price of this tick: existing, the senses read, the brain's structure, and every accepted repair sweep it ran
+      const price = POP.base + b.structurePrice + POP.sweep * b.sweepsTick + (moved ? POP.move : 0) + (c.outcome === 4 ? POP.emit : 0) + extra;
       if (this.rng.random() < price) { c.energy--; s.soil[c.y * CFG.w + c.x]++; }
       c.reward = c.energy - before;
     }
@@ -353,5 +569,5 @@ function mutualInformation(counts) { // counts: array of rows (symbol) of arrays
   return mi;
 }
 
-return { Mulberry, INNER_WIDTH, MAX_CORTICES, RULES, CFG, POP, N, DIRS, OUTCOMES, GROUP_NAMES, GENE, CORTEX, G, bit, Substrate, Brain, Population, actionsFor, layoutFor, mutate, firstGenome, mutualInformation };
+return { Mulberry, RULES, CFG, POP, BRAIN, N, DIRS, OUTCOMES, GROUP_NAMES, GENE, G, bit, Substrate, Brain, Population, actionsFor, layoutFor, stageWidths, mutate, firstGenome, mutualInformation };
 });

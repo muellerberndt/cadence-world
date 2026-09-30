@@ -12,3 +12,7 @@ rule sets; `SUMMARY.txt` is `sim/summarize.py` over the folder.
 - `sweep4-2026-09-17/`: six biting-centred worlds with the cost-neutral split mutation.
 - `sweep5-2026-09-18/`: six biting worlds with the read price at a quarter (0.0001 per unit) and at zero.
 - `sweep5b-2026-09-18/`: the page world, ripening + rock + biting + carrying at the quarter read price.
+- `probe-settlement-2026-09-30/`: the page world after the third build, whose creatures carry deep
+  recursive settlement brains (Cadence 0.50 model) instead of records cortices; 6,000 ticks, two
+  seeds, at the page prices. Earlier folders measure the records-brain era and are not comparable
+  brain-for-brain.

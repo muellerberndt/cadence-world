@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Witnessed World</title>
-<meta name="description" content="A conserved-mass world under a moving sun, observed by creatures whose brains are inherited as wiring and learned as records.">
+<meta name="description" content="A conserved-mass world under a moving sun, observed by creatures with deep recursive settlement brains: inherited as a body plan, settled jointly every tick, learned within one life.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -87,7 +87,7 @@
 <body>
 <header>
   <h1>Witnessed <em>World</em></h1>
-  <p>Mass conserved, one sun, local rules. The creatures inherit the wiring of a brain, one or more cortices each reading its own part of the senses, and learn the records in one life. Nothing tells them to graze, hunt, hoard or speak; whatever you see them doing, they found.</p>
+  <p>Mass conserved, one sun, local rules. Each creature inherits the body plan of a deep recursive settlement brain — populations of patches settled jointly every tick, the later stages observing the states and prediction errors of the earlier — and learns its relations in one life, paying mass for every patch and every repair sweep. Nothing tells them to graze, hunt, hoard or speak; whatever you see them doing, they found.</p>
 </header>
 
 <div class="stage">
@@ -127,7 +127,7 @@
       <h2>A brain, live</h2>
       <canvas id="brain" width="340" height="440"></canvas>
       <div id="believed" class="believed">Click a creature.</div>
-      <div class="row" style="margin-top:6px"><button class="act" id="winners" aria-pressed="true">A winner's brain</button><button class="act" id="follow" aria-pressed="false">Follow it</button><button class="act" id="eldest">The eldest</button><button class="act" id="biggest">The biggest brain</button><button class="act" id="hunter">A hunter</button><button class="act" id="halves">Two halves</button></div>
+      <div class="row" style="margin-top:6px"><button class="act" id="winners" aria-pressed="true">A winner's brain</button><button class="act" id="follow" aria-pressed="false">Follow it</button><button class="act" id="eldest">The eldest</button><button class="act" id="biggest">The biggest brain</button><button class="act" id="hunter">A hunter</button><button class="act" id="deepest">The deepest</button></div>
     </div>
 
     <dl class="counters">
@@ -137,16 +137,16 @@
       <dt>mass: soil + food + held</dt><dd id="c-mass">0</dd>
       <dt>conserved</dt><dd id="c-ok" class="ok">yes</dd>
       <dt>grazers / hunters</dt><dd id="c-niche">0 / 0</dd>
-      <dt>mean brain cells / cortices</dt><dd id="c-cells">0 / 0</dd>
+      <dt>mean patches / depth</dt><dd id="c-cells">0 / 0</dd>
       <dt>mean horizon / reading units</dt><dd id="c-read">0 / 0</dd>
       <dt>speak / hear</dt><dd id="c-sym">0% / 0%</dd>
-      <dt>recurrent / two halves</dt><dd id="c-halves">0% / 0%</dd>
+      <dt>settles / learns qualified</dt><dd id="c-halves">0% / 0%</dd>
       <dt>cells witnessed</dt><dd id="c-seen">0%</dd>
       <dt>sun contrast</dt><dd id="c-sun">0.00</dd>
     </dl>
 
     <div>
-      <h2>Brain size, cortices, speech and two-halves brains over time</h2>
+      <h2>Patches, depth, speech and horizon over time</h2>
       <canvas id="complexity" width="340" height="70"></canvas>
     </div>
 
@@ -177,8 +177,8 @@
 
     <div class="rules">
       <p>Per tick, per cell: with probability 0.08 × light × fertility a unit of soil becomes food (an unripe bud, where food ripens); with 0.01 food becomes soil; with 0.05 a unit of soil steps to a neighbour. Rock holds no soil and cannot be entered.</p>
-      <p>A creature's reading is a set of field groups: the food, the unripe buds, the creatures, the rock, the kind of ground and the kin in its window; its energy, the light, what it last did, whether it is dark, what it carries, what it heard, and the codes its own cortices produced a tick ago. Each cortex reads the groups its mask names through a fixed sparse expansion developed from its genome and holds one record per active cell and action of the mass that followed. The brain acts on the sum of what its cortices read, or, with a horizon above zero, on a search through the readings its moves would produce; after the outcome every cortex writes the error into exactly the cells its reading touched. A split mutates the genome: the genes, each cortex's mask, size and wiring; a cortex can be added, removed, or split into two halves.</p>
-      <p>Each tick a creature loses a unit to the soil under it with probability 0.08 + 0.0001 per unit read + 0.01 per 256 cells + 0.002 per active cell + a tenth of a read per imagined reading + 0.05 if it moved + 0.02 if it spoke + 0.10 if it bit. A bite takes up to three units from a neighbour. It splits at the threshold its genome names. At 0 it dies into the soil and its records leave the known world.</p>
+      <p>A creature's reading is a set of field groups: the food, the unripe buds, the creatures, the rock, the kind of ground and the kin in its window; its energy, the light, what it last did, whether it is dark, what it carries and what it heard. Its brain is a deep recursive settlement network in the Cadence 0.50 model, developed from its genome: a perception population reads the masked senses, each observer stage above reads the senses too and observes the states and prediction errors of every earlier stage, and the last stage's patches are the action values. Every patch predicts its inputs through one learned relation; a tick settles all states jointly against one energy, and the settled policy states rank the actions — with a horizon above zero, a search settles the readings its moves would produce. Learning is anchored parameter repair toward a one-step value target of the mass that followed; a solve that does not reach stationarity is refused, retains nothing and is counted, and a creature whose settle refuses waits. A split mutates the body plan: the window, the width, the depth, the wiring, the mask, the plasticity, never the parent's learned relations.</p>
+      <p>Each tick a creature loses a unit to the soil under it with probability 0.08 + 0.0001 per unit read + 0.0004 per patch + 0.00001 per relation + 0.0005 per accepted repair sweep, settling and learning alike + 0.05 if it moved + 0.02 if it spoke + 0.10 if it bit. Deeper brains settle more and pay more; they persist only where the settling earns its mass. A bite takes up to three units from a neighbour. It splits at the threshold its genome names. At 0 it dies into the soil and its records leave the known world.</p>
     </div>
   </aside>
 </div>
@@ -189,7 +189,7 @@
 const { CFG, POP, N, DIRS, OUTCOMES, GROUP_NAMES, G, bit, Substrate, Population } = CW;
 const DEFAULT_RULES = { ripen: true, rock: true, night: false, kinds: false, bite: true, carry: true, digest: false };
 POP.read = 0.0001; // the page's world reads at a quarter of the sweep-1 price: the price at which seeing survives biting (design, section 15)
-const ABBREV = { food: 'food', occ: 'others', energy: 'energy', out: 'last', light: 'light', green: 'unripe', rock: 'rock', kind: 'kind', lastkind: 'digested', kin: 'kin', dark: 'dark', carried: 'carried', heard: 'heard', inner: 'the other cortices' };
+const ABBREV = { food: 'food', occ: 'others', energy: 'energy', out: 'last', light: 'light', green: 'unripe', rock: 'rock', kind: 'kind', lastkind: 'digested', kin: 'kin', dark: 'dark', carried: 'carried', heard: 'heard' };
 const RATES = [0, 1, 2, 4, 8, 15, 30, 60];
 
 // ---------- the 3D world ----------
@@ -273,7 +273,7 @@ function pickWinner() { // a random member of the leading lineage
 function say(e) {
   const id = c => `<b>#${c.id}</b>`; let line = null, cls = e.kind;
   if (e.kind === 'bite') line = `${id(e.c)} bit ${id(e.v)} and took ${e.take}`;
-  else if (e.kind === 'birth') line = `${id(e.parent)} split; ${id(e.c)} is born with ${e.c.energy}${e.c.brain.cortices.length > e.parent.brain.cortices.length ? ', one cortex more' : ''}`;
+  else if (e.kind === 'birth') line = `${id(e.parent)} split; ${id(e.c)} is born with ${e.c.energy}${e.c.brain.depth > e.parent.brain.depth ? ', one stage deeper' : ''}`;
   else if (e.kind === 'die') line = `${id(e.c)} died at ${e.c.age}, ${e.c.eats} meals, ${e.c.bites} bites`;
   else if (e.kind === 'drop') { line = `${id(e.c)} dropped soil at ${e.c.x},${e.c.y}${sub.soil[e.c.y * CFG.w + e.c.x] > 9 ? ' on a hoard' : ''}`; cls = 'carry'; }
   else if (e.kind === 'dig') { if (frame % 4) return; line = `${id(e.c)} dug up soil`; cls = 'carry'; }
@@ -370,8 +370,8 @@ function drawWorld() {
   placeCamera(); renderer.render(scene, camera);
 }
 
-// ---------- the brain scan: every cortex, its mask, the reading, the records read ----------
-const bc = document.getElementById('brain'), bctx = bc.getContext('2d'); let glow = null, glowFor = null;
+// ---------- the brain scan: the reading, the stages settling jointly, the action values ----------
+const bc = document.getElementById('brain'), bctx = bc.getContext('2d'); let glow = null, glowPrev = null, glowFor = null;
 function drawBrain() {
   const W = bc.width, H = bc.height; bctx.fillStyle = '#11141b'; bctx.fillRect(0, 0, W, H);
   bctx.font = '10px IBM Plex Mono, monospace';
@@ -389,23 +389,41 @@ function drawBrain() {
     if (b.x[B.occ.off + q]) { bctx.fillStyle = B.kin && b.x[B.kin.off + q] ? '#f0c56a' : '#ddd6c6'; bctx.beginPath(); bctx.arc(px + cellPx / 2, py + cellPx / 2, cellPx * 0.2, 0, 7); bctx.fill(); }
   }
   bctx.strokeStyle = '#f0c56a'; bctx.strokeRect(x0 + r * cellPx - 0.5, y0 + r * cellPx - 0.5, cellPx, cellPx);
-  const small = b.L.groups.filter(gp => !(gp.name in { food: 1, occ: 1, green: 1, rock: 1, kind: 1, kin: 1, inner: 1 }));
+  const small = b.L.groups.filter(gp => !(gp.name in { food: 1, occ: 1, green: 1, rock: 1, kind: 1, kin: 1 }));
   let fy = y0 + 2;
-  for (const gp of small) { bctx.fillStyle = '#8d8a80'; bctx.fillText(ABBREV[gp.name], 82, fy + 8); for (let v = 0; v < gp.size; v++) { bctx.fillStyle = b.x[gp.off + v] ? '#f0c56a' : '#232833'; bctx.fillRect(140 + v * 9, fy, 7, 7); } fy += 11; }
-  if (glowFor !== chosen) { glow = b.cortices.map(cx => new Float32Array(cx.M)); glowFor = chosen; }
-  const nC = b.cortices.length, gx0 = 12, gy = 96, gw = Math.min(150, (W - 24 - (nC - 1) * 8) / nC);
-  b.cortices.forEach((cx, ci) => {
-    const gl = glow[ci]; for (let m = 0; m < cx.M; m++) gl[m] *= 0.82; for (let j = 0; j < cx.k; j++) gl[cx.active[j]] = 1;
-    const side = Math.ceil(Math.sqrt(cx.M)), gx = gx0 + ci * (gw + 8), px = gw / side;
-    bctx.fillStyle = '#0a0c11'; bctx.fillRect(gx - 2, gy - 2, gw + 4, gw + 4);
-    for (let m = 0; m < cx.M; m++) { const v = gl[m]; bctx.fillStyle = v < 0.02 ? '#1a1e27' : `hsl(${(hue + ci * 40) % 360} 70% ${20 + 50 * v}%)`; bctx.fillRect(gx + (m % side) * px, gy + ((m / side) | 0) * px, Math.max(px - 0.6, 0.8), Math.max(px - 0.6, 0.8)); }
-    const names = GROUP_NAMES.filter(n => cx.mask & bit(n)).map(n => ABBREV[n]);
-    bctx.fillStyle = '#ddd6c6'; bctx.fillText(`${cx.M} cells, ${cx.k} fire`, gx, gy + gw + 12);
-    bctx.fillStyle = '#8d8a80'; let line = '', ly = gy + gw + 23;
-    for (const n of names) { if (bctx.measureText(line + n + ' ').width > gw) { bctx.fillText(line, gx, ly); ly += 10; line = ''; } line += n + ' '; }
-    bctx.fillText(line, gx, ly);
-  });
-  b.cortices.forEach((cx, ci) => { if (!(cx.mask & bit('inner'))) return; const gx = gx0 + ci * (gw + 8) + gw / 2; b.cortices.forEach((o, oi) => { const ox = gx0 + oi * (gw + 8) + gw / 2; bctx.strokeStyle = '#f0c56a'; bctx.lineWidth = 1.2; bctx.beginPath(); if (oi === ci) { bctx.arc(gx, gy - 6, 4, 0, 7); } else { bctx.moveTo(ox, gy - 3); bctx.quadraticCurveTo((ox + gx) / 2, gy - 12, gx, gy - 3); } bctx.stroke(); }); });
+  for (const gp of small) {
+    const sensed = g.mask & bit(gp.name);
+    bctx.fillStyle = sensed ? '#8d8a80' : '#3a3d45'; bctx.fillText(ABBREV[gp.name], 82, fy + 8);
+    for (let v = 0; v < gp.size; v++) { bctx.fillStyle = sensed ? (b.x[gp.off + v] ? '#f0c56a' : '#232833') : '#1a1e27'; bctx.fillRect(140 + v * 9, fy, 7, 7); }
+    fy += 11;
+  }
+  // the stages, perception at the bottom, the policy on top; a patch square is lit by its settled
+  // state, rimmed red by its prediction error, and flashes as the equilibrium tracks a changing world
+  if (glowFor !== chosen) { glow = new Float32Array(b.P); glowPrev = new Float64Array(b.s); glowFor = chosen; }
+  for (let i = 0; i < b.P; i++) { glow[i] = Math.max(glow[i] * 0.8, Math.min(Math.abs(b.s[i] - glowPrev[i]) * 3, 1)); glowPrev[i] = b.s[i]; }
+  const stX = 12, stW = W - 24, rowH2 = 26, nSt = b.pops.length;
+  const stY = si => 300 - (si + 1) * (rowH2 + 14) + 14; // stage si's row top; the stack sits above the action bars
+  // observation wiring: a left rail from every stage to each earlier one
+  bctx.lineWidth = 1;
+  for (let si = 1; si < nSt; si++) for (let sj = 0; sj < si; sj++) {
+    const yTo = stY(si) + rowH2 / 2, yFrom = stY(sj) + rowH2 / 2, xr = stX - 3 - sj * 3;
+    bctx.strokeStyle = `hsla(${hue} 60% 60% / 0.55)`;
+    bctx.beginPath(); bctx.moveTo(stX + 1, yFrom); bctx.lineTo(xr, yFrom); bctx.lineTo(xr, yTo); bctx.lineTo(stX + 1, yTo); bctx.stroke();
+  }
+  for (let si = 0; si < nSt; si++) {
+    const pop = b.pops[si], y = stY(si), pw = Math.min(16, stW / pop.n);
+    for (let k = 0; k < pop.n; k++) {
+      const i = pop.off + k, x = stX + k * pw, st = b.s[i], er = Math.min(Math.abs(b.e[i]) * 2, 1), gl = glow[i];
+      const lum = 16 + 44 * Math.min(Math.abs(st), 1) + 24 * gl;
+      bctx.fillStyle = st >= 0 ? `hsl(${hue} 65% ${lum}%)` : `hsl(${(hue + 190) % 360} 45% ${lum}%)`;
+      bctx.fillRect(x, y, pw - 1.5, rowH2 - 8);
+      if (er > 0.06) { bctx.fillStyle = `hsla(347 70% 60% / ${er})`; bctx.fillRect(x, y + rowH2 - 8, pw - 1.5, 2.5); }
+      if (si === nSt - 1 && k === chosen.last && k < b.A) { bctx.strokeStyle = '#ddd6c6'; bctx.strokeRect(x - 0.5, y - 0.5, pw - 0.5, rowH2 - 7); }
+    }
+    bctx.fillStyle = '#8d8a80';
+    const label = si === 0 ? `perception ${pop.n}` : si === nSt - 1 ? `policy ${pop.n} · the action values` : `observer ${si} · ${pop.n}, reads the senses, observes all below`;
+    bctx.fillText(label, stX, y + rowH2 + 3);
+  }
   const ax = 12, ay = 318, bw = 150, rowH = 12; const names = b.actions;
   const sc = b.score || b.q; let lo = Infinity, hi = -Infinity;
   for (let a = 0; a < b.A; a++) { lo = Math.min(lo, b.q[a], sc[a]); hi = Math.max(hi, b.q[a], sc[a]); } const span = Math.max(hi - lo, 0.05);
@@ -418,8 +436,11 @@ function drawBrain() {
     if (b.horizon > 0 && a < 4) { const sx = x + 50 + (bw / cols) * ((sc[a] - lo) / span); bctx.fillStyle = '#f0c56a'; bctx.fillRect(sx - 1, y + 1, 2, rowH - 2); }
   }
   bctx.fillStyle = '#5a5a58';
-  bctx.fillText(`horizon ${b.horizon}${b.horizon ? `, ${b.imagined} readings imagined` : ''}  last write ${b.lastDelta >= 0 ? '+' : ''}${b.lastDelta.toFixed(3)}`, 12, H - 18);
-  bctx.fillText(`radius ${b.r}  lr ${G(g, 'lr')}  γ ${b.gamma}  ε ${b.eps}  splits at ${G(g, 'splitAt')}  ${b.K ? b.K + ' symbols' : 'mute'}${b.hears ? ', hears' : ''}`, 12, H - 6);
+  const settleTxt = b.lastSettle >= 0 ? `settled in ${b.lastSettle}` : 'settle refused, waited';
+  const learnTxt = b.lastLearn >= 0 ? `learned in ${b.lastLearn}` : b.learns ? 'learn refused' : 'nothing learned yet';
+  bctx.fillText(`depth ${b.depth} · ${b.P} patches · ${b.C} relations · ${settleTxt}, ${learnTxt} sweeps`, 12, H - 30);
+  bctx.fillText(`horizon ${b.horizon}${b.horizon ? `, ${b.imagined} readings imagined` : ''}  last target pull ${b.lastDelta >= 0 ? '+' : ''}${b.lastDelta.toFixed(3)}`, 12, H - 18);
+  bctx.fillText(`radius ${b.r}  prior ${b.prior}  γ ${b.gamma}  ε ${b.eps}  splits at ${G(g, 'splitAt')}  ${b.K ? b.K + ' symbols' : 'mute'}${b.hears ? ', hears' : ''}`, 12, H - 6);
 }
 
 // ---------- the sidebar ----------
@@ -427,11 +448,11 @@ const cxc = document.getElementById('complexity'), cxctx = cxc.getContext('2d');
 function drawComplexity() {
   const W = cxc.width, H = cxc.height; cxctx.fillStyle = '#11141b'; cxctx.fillRect(0, 0, W, H);
   if (history.length < 2) return;
-  const n = history.length, maxCells = Math.max(...history.map(h => h.cells), 256);
+  const n = history.length, maxPatches = Math.max(...history.map(h => h.patches), 40);
   const line = (key, max, color) => { cxctx.strokeStyle = color; cxctx.lineWidth = 1.5; cxctx.beginPath(); history.forEach((h, i) => { const x = i / (n - 1) * (W - 2) + 1, y = H - 4 - (h[key] / max) * (H - 10); i ? cxctx.lineTo(x, y) : cxctx.moveTo(x, y); }); cxctx.stroke(); };
-  line('cells', maxCells, '#f0c56a'); line('cortices', 4, '#ddd6c6'); line('speak', 1, '#b6e264'); line('halves', 1, '#e0679a');
+  line('patches', maxPatches, '#f0c56a'); line('depth', 4, '#ddd6c6'); line('speak', 1, '#b6e264'); line('horizon', 2, '#e0679a');
   cxctx.font = '10px IBM Plex Mono, monospace'; const h = history[n - 1];
-  cxctx.fillStyle = '#f0c56a'; cxctx.fillText(`cells ${h.cells | 0}`, 4, 10); cxctx.fillStyle = '#ddd6c6'; cxctx.fillText(`cortices ${h.cortices.toFixed(2)}`, 84, 10); cxctx.fillStyle = '#b6e264'; cxctx.fillText(`speak ${(100 * h.speak) | 0}%`, 190, 10); cxctx.fillStyle = '#e0679a'; cxctx.fillText(`halves ${(100 * h.halves) | 0}%`, 260, 10);
+  cxctx.fillStyle = '#f0c56a'; cxctx.fillText(`patches ${h.patches | 0}`, 4, 10); cxctx.fillStyle = '#ddd6c6'; cxctx.fillText(`depth ${h.depth.toFixed(2)}`, 100, 10); cxctx.fillStyle = '#b6e264'; cxctx.fillText(`speak ${(100 * h.speak) | 0}%`, 186, 10); cxctx.fillStyle = '#e0679a'; cxctx.fillText(`horizon ${h.horizon.toFixed(2)}`, 254, 10);
 }
 function lineagePanel() {
   const counts = new Map(), hueOf = new Map();
@@ -439,12 +460,12 @@ function lineagePanel() {
   const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7); const max = top.length ? top[0][1] : 1;
   leader = top.length ? top[0][0] : null;
   document.getElementById('lineages').innerHTML = top.map(([l, n], k) => `<div class="lineage${k === 0 ? ' lead' : ''}${chosen && !chosen.dead && chosen.lineage === l ? ' shown' : ''}"><i style="background:hsl(${hueOf.get(l) * 360 | 0} 70% 60%)"></i><div class="bar"><b style="width:${(100 * n / max) | 0}%;background:hsl(${hueOf.get(l) * 360 | 0} 60% 55%)"></b></div><span>${n}</span></div>`).join('') || '<span class="lineage">none alive</span>';
-  if (leader !== null) { const m = pop.creatures.filter(c => c.lineage === leader); const ctx = m.reduce((a, c) => a + c.brain.cortices.length, 0) / m.length, cells = m.reduce((a, c) => a + c.brain.cellsTotal, 0) / m.length, hunters = m.filter(c => c.bites > 0 && c.bites >= c.eats).length; document.getElementById('lead').textContent = `leader: ${m.length} alive, ${ctx.toFixed(1)} cortices, ${cells | 0} cells, ${hunters} hunters`; }
+  if (leader !== null) { const m = pop.creatures.filter(c => c.lineage === leader); const dep = m.reduce((a, c) => a + c.brain.depth, 0) / m.length, patches = m.reduce((a, c) => a + c.brain.P, 0) / m.length, hunters = m.filter(c => c.bites > 0 && c.bites >= c.eats).length; document.getElementById('lead').textContent = `leader: ${m.length} alive, depth ${dep.toFixed(1)}, ${patches | 0} patches, ${hunters} hunters`; }
 }
 function stats() {
-  const cs = pop.creatures, n = Math.max(cs.length, 1); let cells = 0, ctx = 0, read = 0, speak = 0, hears = 0, hor = 0, inner = 0, halves = 0, hunters = 0, grazers = 0;
-  for (const c of cs) { cells += c.brain.cellsTotal; ctx += c.brain.cortices.length; read += c.brain.readUnits; speak += c.brain.K > 0; hears += c.brain.hears; hor += c.brain.horizon; inner += c.brain.readsInner; halves += c.brain.halves; if (c.bites > 0 && c.bites >= c.eats) hunters++; else if (c.eats > 0) grazers++; }
-  return { cells: cells / n, cortices: ctx / n, read: read / n, speak: speak / n, hears: hears / n, horizon: hor / n, inner: inner / n, halves: halves / n, hunters, grazers };
+  const cs = pop.creatures, n = Math.max(cs.length, 1); let patches = 0, dep = 0, read = 0, speak = 0, hears = 0, hor = 0, dOk = 0, dTr = 0, lOk = 0, lTr = 0, hunters = 0, grazers = 0;
+  for (const c of cs) { const b = c.brain; patches += b.P; dep += b.depth; read += b.readUnits; speak += b.K > 0; hears += b.hears; hor += b.horizon; dOk += b.decideOk; dTr += b.decides; lOk += b.learnOk; lTr += b.learns; if (c.bites > 0 && c.bites >= c.eats) hunters++; else if (c.eats > 0) grazers++; }
+  return { patches: patches / n, depth: dep / n, read: read / n, speak: speak / n, hears: hears / n, horizon: hor / n, settled: dTr ? dOk / dTr : 1, learned: lTr ? lOk / lTr : 1, hunters, grazers };
 }
 function counters() {
   const m = pop.mass; let seen = 0; for (let i = 0; i < N; i++) if (pop.count[i] > 0) seen++;
@@ -452,10 +473,10 @@ function counters() {
   set('c-tick', sub.tick); set('c-alive', pop.creatures.length); set('c-births', `${pop.births} / ${pop.deaths}`); set('c-mass', m);
   const ok = document.getElementById('c-ok'); ok.textContent = m === mass0 ? 'yes' : 'NO'; ok.className = m === mass0 ? 'ok' : 'bad';
   set('c-seen', `${(100 * seen / N).toFixed(0)}%`); set('c-sun', sub.contrast.toFixed(2)); set('c-niche', `${st.grazers} / ${st.hunters}`);
-  set('c-cells', `${st.cells.toFixed(0)} / ${st.cortices.toFixed(2)}`); set('c-read', `${st.horizon.toFixed(2)} / ${st.read.toFixed(0)}`); set('c-sym', `${(100 * st.speak).toFixed(0)}% / ${(100 * st.hears).toFixed(0)}%`); set('c-halves', `${(100 * st.inner).toFixed(0)}% / ${(100 * st.halves).toFixed(0)}%`);
+  set('c-cells', `${st.patches.toFixed(0)} / ${st.depth.toFixed(2)}`); set('c-read', `${st.horizon.toFixed(2)} / ${st.read.toFixed(0)}`); set('c-sym', `${(100 * st.speak).toFixed(0)}% / ${(100 * st.hears).toFixed(0)}%`); set('c-halves', `${(100 * st.settled).toFixed(0)}% / ${(100 * st.learned).toFixed(0)}%`);
   const b = document.getElementById('believed');
   if (chosen && chosen.dead) b.innerHTML = `<b>creature ${chosen.id}</b> died at tick ${chosen.diedAt} after ${chosen.eats} meals and ${chosen.bites} bites. Its records left the known world with it.`;
-  else if (chosen) b.innerHTML = `<b>creature ${chosen.id}</b>, lineage ${chosen.lineage}, age ${chosen.age}, holds ${chosen.energy}${chosen.carried ? ' and carries soil' : ''}. ${chosen.eats} meals, ${chosen.bites} bites given, ${chosen.bitten} taken. ${chosen.brain.cortices.length} ${chosen.brain.cortices.length > 1 ? 'cortices' : 'cortex'}, ${chosen.brain.cellsTotal} cells. Last: ${chosen.brain.actions[chosen.last]} → ${OUTCOMES[chosen.outcome]}.`;
+  else if (chosen) b.innerHTML = `<b>creature ${chosen.id}</b>, lineage ${chosen.lineage}, age ${chosen.age}, holds ${chosen.energy}${chosen.carried ? ' and carries soil' : ''}. ${chosen.eats} meals, ${chosen.bites} bites given, ${chosen.bitten} taken. Depth ${chosen.brain.depth}, ${chosen.brain.P} patches. Last: ${chosen.brain.actions[chosen.last]} → ${OUTCOMES[chosen.outcome]}.`;
   else b.textContent = 'A random brain of the leading lineage is shown; click a creature to see its own.';
 }
 
@@ -474,9 +495,9 @@ const speed = document.getElementById('speed'); speed.addEventListener('input', 
 document.getElementById('reseed').addEventListener('click', reseed);
 followBtn.addEventListener('click', () => { if (!chosen) return; cam.follow = !cam.follow; followBtn.setAttribute('aria-pressed', String(cam.follow)); if (cam.follow) cam.dist = Math.min(cam.dist, 22); });
 document.getElementById('eldest').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.age > b.age) b = c; focus(b); });
-document.getElementById('biggest').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.brain.cellsTotal * c.brain.cortices.length > b.brain.cellsTotal * b.brain.cortices.length) b = c; focus(b); });
+document.getElementById('biggest').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.brain.P > b.brain.P) b = c; focus(b); });
 document.getElementById('hunter').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.bites > b.bites) b = c; focus(b); });
-document.getElementById('halves').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (c.brain.halves && (!b || c.age > b.age)) b = c; if (!b) for (const c of pop.creatures) if (c.brain.cortices.length > 1 && (!b || c.age > b.age)) b = c; focus(b); });
+document.getElementById('deepest').addEventListener('click', () => { let b = null; for (const c of pop.creatures) if (!b || c.brain.depth > b.brain.depth || (c.brain.depth === b.brain.depth && c.age > b.age)) b = c; focus(b); });
 document.getElementById('rain').addEventListener('click', () => { let moved = 0, guard = 0; const r = new CW.Mulberry(sub.tick); while (moved < 800 && guard++ < 100000) { const i = (r.random() * N) | 0; if (!sub.rock[i] && sub.soil[i] > 0 && sub.food[i] + sub.green[i] < CFG.foodCap) { sub.soil[i]--; sub.food[i]++; moved++; } } });
 document.getElementById('eclipse').addEventListener('click', () => { sub.eclipse = 1800; });
 document.getElementById('cull').addEventListener('click', () => {
