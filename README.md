@@ -1,5 +1,22 @@
 # cadence-world
 
+**Current brain guidance.** Within a creature's life, the intended brain acquires reusable relationships
+between senses, actions and outcomes, retains context and reads durable memory.
+Witnessed prediction failures can admit local repair tied to the executed action.
+Fresh founders remain an evolutionary control, not a reason to reset every
+observation. Compare retained-state behavior, memory cuts and repair schedules.
+The world's simulated metabolic price does not measure physical energy, and
+its survival results do not establish low recurring compute.
+
+For new integrated brains, follow the [world-model guide](https://github.com/muellerberndt/cadence/blob/main/docs/world-model.md) and use
+`Brain.compose`: observer-like software patches with reciprocal connections,
+bounded local state, ports, memory readback, records and witnessed repair, with
+public evidence for
+behavioral claims. Continuing state and durable acquired knowledge support the
+same life. Deep System 1 is the foundation; System 2 is optional feedback inside
+the same settlement. The implementations and measurements below keep their
+own source identity.
+
 [Website](https://floatingpragma.io/cadence/) · [Library](https://github.com/muellerberndt/cadence) · [Paper](https://philpapers.org/rec/MUECAP-2)
 
 A conserved-mass world under a moving sun, now with dens, predators and
