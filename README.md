@@ -17,7 +17,7 @@ same life. Deep System 1 is the foundation; System 2 is optional feedback inside
 the same settlement. The implementations and measurements below keep their
 own source identity.
 
-[Website](https://floatingpragma.io/cadence/) · [Library](https://github.com/muellerberndt/cadence) · [Paper](https://philpapers.org/rec/MUECAP-2)
+[Pragma Research](https://floatingpragma.io/) · [Library](https://github.com/muellerberndt/cadence) · [Paper](https://philpapers.org/rec/MUECAP-2)
 
 A conserved-mass world under a moving sun, now with dens, predators and
 beings that carry **Cadence 0.50** brains. Every being owns a deep
